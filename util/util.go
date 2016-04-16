@@ -71,7 +71,7 @@ func format(kill *zkill.ZKill, bot *slack.Client, config *viper.Viper) {
 	attch := slack.Attachment{}
 	attch.MarkdownIn = []string{"pretext", "text"}
 	attch.Title = title.String()
-	attch.TitleLink = "https://zkillboard.com/kills/" + strconv.Itoa(kill.KillID) + "/"
+	attch.TitleLink = "https://zkillboard.com/kill/" + strconv.Itoa(kill.KillID) + "/"
 	attch.ThumbURL = "http://image.eveonline.com/render/" + strconv.Itoa(kill.Killmail.Victim.ShipType.ID) + "_64.png"
 	attch.Text = body.String()
 	if withinCorpFilter(kill.Killmail.Victim.Corporation.ID, config) {
