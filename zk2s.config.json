@@ -1,0 +1,16 @@
+{
+  "userAgent":"",
+  "botToken": "your-token-here",
+  "channelName":"general",
+  "iskMinimum":0,
+  "excludeLosses":false,
+  "excludeShips":[
+    "Ibis"
+  ],
+  "includeCorps":[
+    "98435020"
+  ],
+  "includeAlliances":[
+    "99006213"
+  ]
+}

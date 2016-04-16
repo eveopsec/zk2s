@@ -1,0 +1,13 @@
+{{define "killtitle"}}
+  {{if .SoloKill}}
+    {{.AttackerName}} killed {{.VictimName}}'s {{.VictimShipName}} all by themselves!
+  {{else}}
+    {{.VictimName}} got wrecked in their {{.VictimShipName}}!
+  {{end}}
+{{end}}
+
+{{define "killbody"}}
+*_Damage Taken_: {{.DamageTaken}}*
+*_Total Value_: {{.TotalValue}}*
+*_Number of Pilots Involved_: {{.NumberInvolved}}*
+{{end}}
