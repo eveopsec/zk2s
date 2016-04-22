@@ -24,27 +24,22 @@ var config *Configuration
 // marshalled in to Config
 func LoadConfig() (*Configuration, error) {
 	c := new(Configuration)
-	c.SetFile(ConfigFileName)
+	c.FileName = ConfigFileName
 	err := gonfig.Load(c)
 	return c, err
 }
 
 // Configuration defines zk2s' configuration
 type Configuration struct {
-	file      string
+	FileName  string
 	UserAgent string     `json:"userAgent"`
 	BotToken  string     `json:"botToken"`
 	Channels  []*Channel `json:"channels"`
 }
 
-// SetFile defines the file name and path
-func (c *Configuration) SetFile(file string) {
-	c.file = file
-}
-
-// File returns the file name and path
+// File returns the file name/path for gonfig interface
 func (c *Configuration) File() string {
-	return c.file
+	return c.FileName
 }
 
 // Save the configuration file
@@ -86,7 +81,7 @@ func configure(c *cli.Context) {
 	fmt.Println("---------------------------------------")
 	fmt.Println("CONFIGURATION")
 	fmt.Println("---------------------------------------")
-	config.SetFile(ConfigFileName)
+	config.FileName = ConfigFileName
 	err = gonfig.Load(config)
 	if err != nil {
 		if os.IsPermission(err) {
