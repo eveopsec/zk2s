@@ -252,7 +252,7 @@ func getOptionInt(lower int, upper int) int {
 // returns true for yes, false for no
 func yesOrNo() bool {
 	option := getInputString()
-	strings.ToLower(option)
+	option = strings.ToLower(option)
 	if len(option) == 0 {
 		fmt.Println("Please enter yes(y) or no(n)")
 		return yesOrNo()
