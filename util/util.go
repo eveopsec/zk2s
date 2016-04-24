@@ -2,6 +2,7 @@
 package util
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -19,6 +20,7 @@ const ConfigFileName = "cfg.zk2s.json"
 
 var t = template.Must(template.ParseGlob("response.tmpl"))
 var config *Configuration
+var input = bufio.NewReader(os.Stdin)
 
 // LoadConfig reads the configuration file and returns it,
 // marshalled in to Config
@@ -85,24 +87,30 @@ func configure(c *cli.Context) {
 	err = gonfig.Load(config)
 	if err != nil {
 		if os.IsPermission(err) {
-			fmt.Printf("Unable to read/write to %v due to permission errors.", config.File())
+			fmt.Printf("Unable to read/write to %v due to permission errors.\n", config.File())
 			fmt.Println("Check permissions and try again.")
 			return
 		} else if os.IsNotExist(err) {
 			fmt.Println("File does not exist, creating a new file...")
 			err = gonfig.Save(config)
 			if err != nil {
-				fmt.Printf("Unable to create configuration - %v", err)
+				fmt.Printf("Unable to create configuration - %v\na", err)
 				return
 			}
 		} else {
-			fmt.Printf("Error - %v", err)
+			fmt.Printf("Error - %v\n", err)
 		}
 	}
+	fmt.Println("A configuration file already exists. Overwrite? Y/N")
+	if !yesOrNo() {
+		return
+	}
+	fmt.Println("---------------------------------------")
+	fmt.Println("BASIC INFORMATION")
 	fmt.Println("Enter a UserAgent Name/E-mail (i.e. your/admin name). CANNOT be empty")
-	fmt.Scanln(&config.UserAgent)
+	config.UserAgent = getInputString()
 	fmt.Println("Enter the auth token for Slack. This can be either a bot token(recommended) or user token.")
-	fmt.Scanln(&config.BotToken)
+	config.BotToken = getInputString()
 	configureChannels(c)
 }
 
@@ -111,12 +119,15 @@ func configureChannels(c *cli.Context) {
 	fmt.Println("---------------------------------------")
 	fmt.Println("CONFIGURE CHANNELS")
 	fmt.Println("---------------------------------------")
-	if len(config.Channels) > 0 {
+	if len(config.Channels) == 0 {
+		fmt.Println("You have no channels configured. Please create a new channel.")
+		newChannel(c)
+	} else {
 		fmt.Println("You have channels already configured:")
 		for c := range config.Channels {
-			fmt.Printf("%v - %v\n", c, config.Channels[c])
+			fmt.Printf("%v - %v\n", c, config.Channels[c].Name)
 		}
-		fmt.Printf("%v - New Channel", len(config.Channels)+1)
+		fmt.Printf("%v - New Channel\n", len(config.Channels)+1)
 		fmt.Println("0 - Continue")
 		fmt.Println("Select a channel to edit it or another option: ")
 		choice = getOptionInt(0, len(config.Channels)+1)
@@ -129,7 +140,6 @@ func configureChannels(c *cli.Context) {
 			editChannel(c, config.Channels[choice])
 		}
 	}
-	newChannel(c)
 	fmt.Println("Saving configuration...")
 	err := gonfig.Save(config)
 	if err != nil {
@@ -145,7 +155,7 @@ func newChannel(c *cli.Context) {
 	fmt.Println("---------------------------------------")
 	channel := new(Channel)
 	fmt.Println("Enter the name of the channel you wish to post to: ")
-	fmt.Scanln(&channel.Name)
+	channel.Name = getInputString()
 	fmt.Println("ISK Values -- enter the following as an integer")
 	fmt.Println("Minimum ISK value of the kill/loss for it to be posted:")
 	fmt.Scanln(&channel.MinimumValue)
@@ -158,9 +168,8 @@ func newChannel(c *cli.Context) {
 	if yesOrNo() {
 		var ok = false
 		for !ok {
-			var ship string
 			fmt.Println("Enter Ship name or TypeID (caps sensitive/must be exact)")
-			fmt.Scanln(&ship)
+			ship := getInputString()
 			channel.ExcludedShips = append(channel.ExcludedShips, ship)
 			fmt.Println("Add another? Y/N")
 			if !yesOrNo() {
@@ -174,9 +183,8 @@ func newChannel(c *cli.Context) {
 	if yesOrNo() {
 		var ok = false
 		for !ok {
-			var alliance string
 			fmt.Println("Enter Alliance name or ID (caps sensitive/must be exact)")
-			fmt.Scanln(alliance)
+			alliance := getInputString()
 			channel.IncludeAlliances = append(channel.IncludeAlliances, alliance)
 			fmt.Println("Add another? Y/N")
 			if !yesOrNo() {
@@ -190,9 +198,8 @@ func newChannel(c *cli.Context) {
 	if yesOrNo() {
 		var ok = false
 		for !ok {
-			var corporation string
 			fmt.Println("Enter Corporation name or ID (caps sensitive/must be exact)")
-			fmt.Scanln(&corporation)
+			corporation := getInputString()
 			channel.IncludeCorporations = append(channel.IncludeCorporations, corporation)
 			fmt.Println("Add another? Y/N")
 			if !yesOrNo() {
@@ -206,9 +213,8 @@ func newChannel(c *cli.Context) {
 	if yesOrNo() {
 		var ok = false
 		for !ok {
-			var character string
 			fmt.Println("Enter Character name or ID (caps sensitive/must be exact)")
-			fmt.Scanln(&character)
+			character := getInputString()
 			channel.IncludeCharacters = append(channel.IncludeCharacters, character)
 			fmt.Println("Add another? Y/N")
 			if !yesOrNo() {
@@ -220,7 +226,7 @@ func newChannel(c *cli.Context) {
 }
 
 func editChannel(c *cli.Context, channel *Channel) {
-
+	// TODO
 }
 
 func verifyConfig(c *cli.Context) {
@@ -245,8 +251,7 @@ func getOptionInt(lower int, upper int) int {
 
 // returns true for yes, false for no
 func yesOrNo() bool {
-	var option string
-	fmt.Scanln(&option)
+	option := getInputString()
 	strings.ToLower(option)
 	if len(option) == 0 {
 		fmt.Println("Please enter yes(y) or no(n)")
@@ -258,4 +263,13 @@ func yesOrNo() bool {
 	}
 	fmt.Println("Please enter yes(y) or no(n)")
 	return yesOrNo()
+}
+
+func getInputString() string {
+	s, _, err := input.ReadLine()
+	if err != nil {
+		fmt.Printf("Error - %v", err)
+		return getInputString()
+	}
+	return string(s)
 }
