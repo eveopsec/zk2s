@@ -61,11 +61,14 @@ type Channel struct {
 }
 
 func RunConfigure(c *cli.Context) {
-	fmt.Printf("Configure %v version %v", c.App.Name, c.App.Version)
-	fmt.Println("What would you like to do?")
+	fmt.Println("***************************************")
+	fmt.Printf("CONFIGURE %v VERSION %v\n", c.App.Name, c.App.Version)
+	fmt.Println("***************************************")
 	fmt.Println("1 - Edit/Create configuration")
 	fmt.Println("2 - Verify configuration")
 	fmt.Println("0 - Exit")
+	fmt.Println("Select an option:")
+	fmt.Println("---------------------------------------")
 	option := getOptionInt(0, 2)
 	switch option {
 	case 0:
@@ -80,9 +83,9 @@ func RunConfigure(c *cli.Context) {
 func configure(c *cli.Context) {
 	var err error
 	config = new(Configuration)
-	fmt.Println("---------------------------------------")
+	fmt.Println("***************************************")
 	fmt.Println("CONFIGURATION")
-	fmt.Println("---------------------------------------")
+	fmt.Println("***************************************")
 	config.FileName = ConfigFileName
 	err = gonfig.Load(config)
 	if err != nil {
@@ -116,16 +119,16 @@ func configure(c *cli.Context) {
 
 func configureChannels(c *cli.Context) {
 	var choice int
-	fmt.Println("---------------------------------------")
+	fmt.Println("***************************************")
 	fmt.Println("CONFIGURE CHANNELS")
-	fmt.Println("---------------------------------------")
+	fmt.Println("***************************************")
 	if len(config.Channels) == 0 {
 		fmt.Println("You have no channels configured. Please create a new channel.")
 		newChannel(c)
 	} else {
 		fmt.Println("You have channels already configured:")
 		for c := range config.Channels {
-			fmt.Printf("%v - %v\n", c, config.Channels[c].Name)
+			fmt.Printf("%v - %v\n", c+1, config.Channels[c].Name)
 		}
 		fmt.Printf("%v - New Channel\n", len(config.Channels)+1)
 		fmt.Println("0 - Continue")
@@ -150,18 +153,22 @@ func configureChannels(c *cli.Context) {
 }
 
 func newChannel(c *cli.Context) {
-	fmt.Println("---------------------------------------")
+	fmt.Println("***************************************")
 	fmt.Println("CONFIGURE NEW CHANNEL")
-	fmt.Println("---------------------------------------")
+	fmt.Println("***************************************")
 	channel := new(Channel)
 	fmt.Println("Enter the name of the channel you wish to post to: ")
 	channel.Name = getInputString()
+	fmt.Println("---------------------------------------")
 	fmt.Println("ISK Values -- enter the following as an integer")
 	fmt.Println("Minimum ISK value of the kill/loss for it to be posted:")
+	fmt.Println("---------------------------------------")
 	fmt.Scanln(&channel.MinimumValue)
 	fmt.Println("Maximum ISK value of the kill/loss for it to be posted:")
 	fmt.Println("Note: value of 0 means no maximum is set")
+	fmt.Println("---------------------------------------")
 	fmt.Scanln(&channel.MaximumValue)
+	fmt.Println("---------------------------------------")
 
 	// Ships
 	fmt.Println("Exclude any ships? Y/N")
@@ -177,6 +184,7 @@ func newChannel(c *cli.Context) {
 			}
 		}
 	}
+	fmt.Println("---------------------------------------")
 
 	// Alliances
 	fmt.Println("Specify Alliance(s) to watch? Y/N")
@@ -192,6 +200,7 @@ func newChannel(c *cli.Context) {
 			}
 		}
 	}
+	fmt.Println("---------------------------------------")
 
 	// Corporations
 	fmt.Println("Specify Corporation(s) to watch? Y/N")
@@ -207,6 +216,7 @@ func newChannel(c *cli.Context) {
 			}
 		}
 	}
+	fmt.Println("---------------------------------------")
 
 	// Characters
 	fmt.Println("Specify Character(s) to watch? Y/N")
@@ -222,6 +232,7 @@ func newChannel(c *cli.Context) {
 			}
 		}
 	}
+	fmt.Println("---------------------------------------")
 	config.Channels = append(config.Channels, channel)
 }
 
@@ -230,9 +241,9 @@ func editChannel(c *cli.Context, channel *Channel) {
 }
 
 func verifyConfig(c *cli.Context) {
-	fmt.Println("---------------------------------------")
+	fmt.Println("***************************************")
 	fmt.Println("VERIFY CONFIGURATION")
-	fmt.Println("---------------------------------------")
+	fmt.Println("***************************************")
 }
 
 func getOptionInt(lower int, upper int) int {
@@ -268,7 +279,11 @@ func yesOrNo() bool {
 func getInputString() string {
 	s, _, err := input.ReadLine()
 	if err != nil {
-		fmt.Printf("Error - %v", err)
+		fmt.Printf("Error - %v\n", err)
+		return getInputString()
+	}
+	if len(s) == 0 {
+		fmt.Println("Input cannot be empty.")
 		return getInputString()
 	}
 	return string(s)
