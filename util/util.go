@@ -137,10 +137,10 @@ func configureChannels(c *cli.Context) {
 		switch choice {
 		case 0:
 			return
-		case 1:
+		case len(config.Channels) + 1:
 			newChannel(c)
 		default:
-			editChannel(c, config.Channels[choice])
+			editChannel(c, config.Channels[choice-1])
 		}
 	}
 	fmt.Println("Saving configuration...")
@@ -237,6 +237,9 @@ func newChannel(c *cli.Context) {
 }
 
 func editChannel(c *cli.Context, channel *Channel) {
+	fmt.Println("***************************************")
+	fmt.Printf("EDIT CHANNEL - #%v\n", channel.Name)
+	fmt.Println("***************************************")
 	// TODO
 }
 
