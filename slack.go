@@ -16,7 +16,7 @@ import (
 )
 
 /* slack.go
- * Defines functions for posting kills to Slack
+ * Defines functions for formatting/posting kills to Slack
  */
 
 var t = template.Must(template.ParseGlob("response.tmpl"))
@@ -36,7 +36,7 @@ func PostKill(kill *zkill.ZKill) {
 	for c := range config.Channels {
 		if util.WithinFilter(kill, config.Channels[c]) {
 			params := format(kill, config.Channels[c])
-
+			log.Printf("Posting kill %v to channel %v", kill.KillID, config.Channels[c])
 			post(config.Channels[c].Name, params)
 		}
 	}

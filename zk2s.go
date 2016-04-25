@@ -11,6 +11,10 @@ import (
 	"github.com/vivace-io/zk2s/util"
 )
 
+/* zk2s.go
+ * Main entrypoint and controller for zk2s
+ */
+
 const (
 	AppAuthor  = "Nathan \"Vivace Naaris\" Morley"
 	AppVersion = "0.2"
