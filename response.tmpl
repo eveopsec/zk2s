@@ -1,13 +1,16 @@
 {{define "killtitle"}}
-  {{if .SoloKill}}
-    {{.AttackerName}} killed {{.VictimName}}'s {{.VictimShipName}} all by themselves!
+  {{if .IsSolo}}
+    {{if .IsLoss}}
+      {{.Killmail.Victim.Character.Name}} can't do solo PvP and lost their {{.Killmail.Victim.ShipType.Name}}...
+    {{else}}
+      {{range $attacker := index .Killmail.Attackers}} {{$attacker.Character.Name}} {{end}} destroyed {{.Killmail.Victim.Character.Name}}'s {{.Killmail.Victim.ShipType.Name}} all by themselves!
+    {{end}}
   {{else}}
-    {{.VictimName}} got wrecked in their {{.VictimShipName}}!
+    {{.Killmail.Victim.Character.Name}} lost a {{.Killmail.Victim.ShipType.Name}}
   {{end}}
 {{end}}
 
 {{define "killbody"}}
-*_Damage Taken_: {{.DamageTaken}}*
-*_Total Value_: {{.TotalValue}}*
-*_Number of Pilots Involved_: {{.NumberInvolved}}*
+*_Total Value:_ {{.TotalValue}} ISK*
+*_Number Involved:_ {{len .Killmail.Attackers}}*
 {{end}}
