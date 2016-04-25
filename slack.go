@@ -2,9 +2,9 @@ package main
 
 import (
 	"bytes"
-	"html/template"
 	"log"
 	"strconv"
+	"text/template"
 	"time"
 
 	"github.com/dustin/go-humanize"

@@ -2,6 +2,11 @@
 
 Application to post kills/losses from zKillboard to Slack in near real time by using zKillboard's RedisQ endpoint.
 
+## Version 0.2
+Get it while it's hot! See releases for release notes and binaries.
+
+## Note
+
 This is still a very rough implementation, so the post templating features are not as full as I might like, and some of the filters may or may not work. Please report any issues you may have.
 
 Feedback and contributions are always welcome. Please create a new issue or pull request on this repository for either, or contact "Vivace Naaris" in game to talk to me!
@@ -15,6 +20,9 @@ Todo:
  - [x] Possibly remove intermediate `postData` structure and directly use killmail.
  - [x] Improve template features and documentation.
  - [ ] Make everything look better and more organized.
+ - [ ] Clean up/organize `util/util.go`
+ - [ ] Allow already configured channels to inspected/edited.
+ - [ ] Command/Option for testing configuration.
 
 **NOTE:** *Using this application on the same server/IP as another that also uses RedisQ can and will result in kills missing and not being posted.*
 
