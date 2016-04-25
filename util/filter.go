@@ -10,7 +10,11 @@ import (
  */
 
 // WithinFilter returns true if the kill is within the channel's filter, false otherwise
-func WithinFilter(kill *zkill.ZKill, channel *Channel) bool {
+func WithinFilter(kill *zkill.ZKill, channel Channel) bool {
+	// KillID of 0 should be skipped as it means no kill was returned from RedisQ
+	if kill.KillID == 0 {
+		return false
+	}
 	if !valueOK(kill, channel) {
 		return false
 	}
@@ -24,30 +28,30 @@ func WithinFilter(kill *zkill.ZKill, channel *Channel) bool {
 }
 
 // IsLoss returns true if the kill is a loss, false otherwise
-func IsLoss(kill *zkill.ZKill, channel *Channel) bool {
-	if characterOK(&kill.Killmail.Victim.Character, channel) {
+func IsLoss(kill *zkill.ZKill, channel Channel) bool {
+	if characterOK(kill.Killmail.Victim.Character, channel) {
 		return true
 	}
-	if corporationOK(&kill.Killmail.Victim.Corporation, channel) {
+	if corporationOK(kill.Killmail.Victim.Corporation, channel) {
 		return true
 	}
-	if allianceOK(&kill.Killmail.Victim.Alliance, channel) {
+	if allianceOK(kill.Killmail.Victim.Alliance, channel) {
 		return true
 	}
 	return false
 }
 
 // IsAwox returns true if the kill was an Awox, partial or otherwise. False if not.
-func IsAwox(kill *zkill.ZKill, channel *Channel) bool {
+func IsAwox(kill *zkill.ZKill, channel Channel) bool {
 	if IsLoss(kill, channel) {
 		for a := range kill.Killmail.Attackers {
-			if characterOK(&kill.Killmail.Attackers[a].Character, channel) {
+			if characterOK(kill.Killmail.Attackers[a].Character, channel) {
 				return true
 			}
-			if corporationOK(&kill.Killmail.Attackers[a].Corporation, channel) {
+			if corporationOK(kill.Killmail.Attackers[a].Corporation, channel) {
 				return true
 			}
-			if allianceOK(&kill.Killmail.Attackers[a].Alliance, channel) {
+			if allianceOK(kill.Killmail.Attackers[a].Alliance, channel) {
 				return true
 			}
 		}
@@ -55,7 +59,7 @@ func IsAwox(kill *zkill.ZKill, channel *Channel) bool {
 	return false
 }
 
-func valueOK(kill *zkill.ZKill, channel *Channel) bool {
+func valueOK(kill *zkill.ZKill, channel Channel) bool {
 	// If kill value is within [MinimumValue, MaximumValue] return true
 	if kill.Zkb.TotalValue >= float32(channel.MinimumValue) && kill.Zkb.TotalValue <= float32(channel.MaximumValue) {
 		return true
@@ -67,8 +71,8 @@ func valueOK(kill *zkill.ZKill, channel *Channel) bool {
 	return false
 }
 
-// returns true if ship is NOT excluded (by name or TypeID), false otherwise
-func shipOK(kill *zkill.ZKill, channel *Channel) bool {
+// returns true if ship is NOT excluded by name, false otherwise
+func shipOK(kill *zkill.ZKill, channel Channel) bool {
 	for ship := range channel.ExcludedShips {
 		if kill.Killmail.Victim.ShipType.Name == channel.ExcludedShips[ship] {
 			return false
@@ -80,24 +84,24 @@ func shipOK(kill *zkill.ZKill, channel *Channel) bool {
 	return true
 }
 
-func involvedOK(kill *zkill.ZKill, channel *Channel) bool {
-	if characterOK(&kill.Killmail.Victim.Character, channel) {
+func involvedOK(kill *zkill.ZKill, channel Channel) bool {
+	if characterOK(kill.Killmail.Victim.Character, channel) {
 		return true
 	}
-	if corporationOK(&kill.Killmail.Victim.Corporation, channel) {
+	if corporationOK(kill.Killmail.Victim.Corporation, channel) {
 		return true
 	}
-	if allianceOK(&kill.Killmail.Victim.Alliance, channel) {
+	if allianceOK(kill.Killmail.Victim.Alliance, channel) {
 		return true
 	}
 	for a := range kill.Killmail.Attackers {
-		if characterOK(&kill.Killmail.Attackers[a].Character, channel) {
+		if characterOK(kill.Killmail.Attackers[a].Character, channel) {
 			return true
 		}
-		if corporationOK(&kill.Killmail.Attackers[a].Corporation, channel) {
+		if corporationOK(kill.Killmail.Attackers[a].Corporation, channel) {
 			return true
 		}
-		if allianceOK(&kill.Killmail.Attackers[a].Alliance, channel) {
+		if allianceOK(kill.Killmail.Attackers[a].Alliance, channel) {
 			return true
 		}
 	}
@@ -105,9 +109,9 @@ func involvedOK(kill *zkill.ZKill, channel *Channel) bool {
 }
 
 // returns true if passed character is in channel.IncludeCharacters, false otherwise
-func characterOK(char *crest.Character, channel *Channel) bool {
+func characterOK(char crest.Character, channel Channel) bool {
 	for c := range channel.IncludeCharacters {
-		if char.Name == channel.IncludeCharacters[c] || string(char.ID) == channel.IncludeCharacters[c] {
+		if (char.Name == channel.IncludeCharacters[c]) || (string(char.ID) == channel.IncludeCharacters[c]) {
 			return true
 		}
 	}
@@ -115,9 +119,9 @@ func characterOK(char *crest.Character, channel *Channel) bool {
 }
 
 // returns true if passed corporation is in channel.IncludeCorporations, false otherwise
-func corporationOK(corp *crest.Corporation, channel *Channel) bool {
+func corporationOK(corp crest.Corporation, channel Channel) bool {
 	for c := range channel.IncludeCorporations {
-		if corp.Name == channel.IncludeCorporations[c] || string(corp.ID) == channel.IncludeCorporations[c] {
+		if corp.Name == channel.IncludeCorporations[c] {
 			return true
 		}
 	}
@@ -125,9 +129,9 @@ func corporationOK(corp *crest.Corporation, channel *Channel) bool {
 }
 
 // returns true if passed alliance is in channel.IncludeAlliances, false otherwise
-func allianceOK(alli *crest.Alliance, channel *Channel) bool {
+func allianceOK(alli crest.Alliance, channel Channel) bool {
 	for a := range channel.IncludeAlliances {
-		if alli.Name == channel.IncludeAlliances[a] || string(alli.ID) == channel.IncludeAlliances[a] {
+		if alli.Name == channel.IncludeAlliances[a] {
 			return true
 		}
 	}

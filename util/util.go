@@ -34,9 +34,9 @@ func LoadConfig() (*Configuration, error) {
 // Configuration defines zk2s' configuration
 type Configuration struct {
 	FileName  string
-	UserAgent string     `json:"userAgent"`
-	BotToken  string     `json:"botToken"`
-	Channels  []*Channel `json:"channels"`
+	UserAgent string    `json:"userAgent"`
+	BotToken  string    `json:"botToken"`
+	Channels  []Channel `json:"channels"`
 }
 
 // File returns the file name/path for gonfig interface
@@ -156,7 +156,7 @@ func newChannel(c *cli.Context) {
 	fmt.Println("***************************************")
 	fmt.Println("CONFIGURE NEW CHANNEL")
 	fmt.Println("***************************************")
-	channel := new(Channel)
+	channel := Channel{}
 	fmt.Println("Enter the name of the channel you wish to post to: ")
 	channel.Name = getInputString()
 	fmt.Println("---------------------------------------")
@@ -175,7 +175,7 @@ func newChannel(c *cli.Context) {
 	if yesOrNo() {
 		var ok = false
 		for !ok {
-			fmt.Println("Enter Ship name or TypeID (caps sensitive/must be exact)")
+			fmt.Println("Enter Ship name(caps sensitive/must be exact)")
 			ship := getInputString()
 			channel.ExcludedShips = append(channel.ExcludedShips, ship)
 			fmt.Println("Add another? Y/N")
@@ -191,7 +191,7 @@ func newChannel(c *cli.Context) {
 	if yesOrNo() {
 		var ok = false
 		for !ok {
-			fmt.Println("Enter Alliance name or ID (caps sensitive/must be exact)")
+			fmt.Println("Enter Alliance name (caps sensitive/must be exact)")
 			alliance := getInputString()
 			channel.IncludeAlliances = append(channel.IncludeAlliances, alliance)
 			fmt.Println("Add another? Y/N")
@@ -207,7 +207,7 @@ func newChannel(c *cli.Context) {
 	if yesOrNo() {
 		var ok = false
 		for !ok {
-			fmt.Println("Enter Corporation name or ID (caps sensitive/must be exact)")
+			fmt.Println("Enter Corporation name (caps sensitive/must be exact)")
 			corporation := getInputString()
 			channel.IncludeCorporations = append(channel.IncludeCorporations, corporation)
 			fmt.Println("Add another? Y/N")
@@ -223,7 +223,7 @@ func newChannel(c *cli.Context) {
 	if yesOrNo() {
 		var ok = false
 		for !ok {
-			fmt.Println("Enter Character name or ID (caps sensitive/must be exact)")
+			fmt.Println("Enter Character name (caps sensitive/must be exact)")
 			character := getInputString()
 			channel.IncludeCharacters = append(channel.IncludeCharacters, character)
 			fmt.Println("Add another? Y/N")
@@ -236,7 +236,7 @@ func newChannel(c *cli.Context) {
 	config.Channels = append(config.Channels, channel)
 }
 
-func editChannel(c *cli.Context, channel *Channel) {
+func editChannel(c *cli.Context, channel Channel) {
 	fmt.Println("***************************************")
 	fmt.Printf("EDIT CHANNEL - #%v\n", channel.Name)
 	fmt.Println("***************************************")

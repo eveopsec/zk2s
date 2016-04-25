@@ -44,7 +44,7 @@ func PostKill(kill *zkill.ZKill) {
 
 // format loads the formatting template and applies formatting
 // rules from the Configuration object.
-func format(kill *zkill.ZKill, channel *util.Channel) (messageParams slack.PostMessageParameters) {
+func format(kill *zkill.ZKill, channel util.Channel) (messageParams slack.PostMessageParameters) {
 	title := new(bytes.Buffer)
 	body := new(bytes.Buffer)
 	var err error
