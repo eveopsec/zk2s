@@ -36,7 +36,7 @@ func PostKill(kill *zkill.ZKill) {
 	for c := range config.Channels {
 		if util.WithinFilter(kill, config.Channels[c]) {
 			params := format(kill, config.Channels[c])
-			log.Printf("Posting kill %v to channel %v", kill.KillID, config.Channels[c])
+			log.Printf("Posting kill %v to channel %v", kill.KillID, config.Channels[c].Name)
 			post(config.Channels[c].Name, params)
 		}
 	}
