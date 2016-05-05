@@ -15,18 +15,24 @@ import (
  * Main entrypoint and controller for zk2s
  */
 
-const (
-	AppAuthor  = "Nathan \"Vivace Naaris\" Morley"
-	AppVersion = "0.3"
-)
+const VERSION = "0.3"
+
+var CONTRIBUTORS = []cli.Author{
+	cli.Author{
+		Name: "Nathan \"Vivace Naaris\" Morley",
+	},
+	cli.Author{
+		Name: "\"Zuke\"",
+	},
+}
 
 var config *util.Configuration
 var bot *slack.Client
 
 func main() {
 	app := cli.NewApp()
-	app.Author = AppAuthor
-	app.Version = AppVersion
+	app.Authors = CONTRIBUTORS
+	app.Version = VERSION
 	app.Commands = []cli.Command{
 		cli.Command{
 			Name:   "start",
