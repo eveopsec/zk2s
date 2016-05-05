@@ -33,6 +33,8 @@ func main() {
 	app := cli.NewApp()
 	app.Authors = CONTRIBUTORS
 	app.Version = VERSION
+	app.Name = "zk2s"
+	app.Usage = "a Slack bot for posting kills from zKillboard to slack in near-real time"
 	app.Commands = []cli.Command{
 		cli.Command{
 			Name:   "start",
