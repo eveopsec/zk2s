@@ -17,7 +17,7 @@ import (
 
 const (
 	AppAuthor  = "Nathan \"Vivace Naaris\" Morley"
-	AppVersion = "0.2"
+	AppVersion = "0.3"
 )
 
 var config *util.Configuration
