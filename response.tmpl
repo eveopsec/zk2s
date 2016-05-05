@@ -6,7 +6,11 @@
       {{range $attacker := index .Killmail.Attackers}} {{$attacker.Character.Name}} {{end}} destroyed {{.Killmail.Victim.Character.Name}}'s {{.Killmail.Victim.ShipType.Name}} all by themselves!
     {{end}}
   {{else}}
-    {{.Killmail.Victim.Character.Name}} lost a {{.Killmail.Victim.ShipType.Name}}
+    {{if .Killmail.Victim.Character.Name}}
+      {{.Killmail.Victim.Character.Name}} lost a {{.Killmail.Victim.ShipType.Name}}
+    {{else}}
+      {{.Killmail.Victim.Corporation.Name}} lost a {{.Killmail.Victim.ShipType.Name}}
+    {{end}}
   {{end}}
 {{end}}
 
