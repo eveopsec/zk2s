@@ -66,8 +66,8 @@ func Run(c *cli.Context) {
 
 	// 3 - Watch for new kills and log errors
 	errc := make(chan error, 5)
-	killc := make(chan zkill.ZKill, 10)
-	zClient := zkill.New()
+	killc := make(chan zkill.Kill, 10)
+	zClient := zkill.NewRedisQ()
 	zClient.UserAgent = config.UserAgent
 	zClient.FetchKillmails(killc, errc)
 	handleKills(killc)
@@ -76,7 +76,7 @@ func Run(c *cli.Context) {
 }
 
 // handleKills sends the kill to be filtered/processed before posting to slack.
-func handleKills(killChan chan zkill.ZKill) {
+func handleKills(killChan chan zkill.Kill) {
 	go func() {
 		for {
 			select {

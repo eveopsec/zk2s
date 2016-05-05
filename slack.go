@@ -23,15 +23,17 @@ var t = template.Must(template.ParseGlob("response.tmpl"))
 
 // data is passed to template objects for defining how a slack post appears.
 type data struct {
-	Killmail   crest.Killmail
-	TotalValue string
-	IsLoss     bool
-	IsSolo     bool
+	Killmail      crest.Killmail
+	TotalValue    string
+	IsLoss        bool
+	IsSolo        bool
+	CorpsInvolved []string
+	AlliInvolved  []string
 }
 
 // PostKill applys the filter(s) to the kill, and posts the kill to slack
 // only if the kill is within the configured filters.
-func PostKill(kill *zkill.ZKill) {
+func PostKill(kill *zkill.Kill) {
 	// For each filter defined in configuration,
 	for c := range config.Channels {
 		if util.WithinFilter(kill, config.Channels[c]) {
@@ -44,7 +46,7 @@ func PostKill(kill *zkill.ZKill) {
 
 // format loads the formatting template and applies formatting
 // rules from the Configuration object.
-func format(kill *zkill.ZKill, channel util.Channel) (messageParams slack.PostMessageParameters) {
+func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMessageParameters) {
 	title := new(bytes.Buffer)
 	body := new(bytes.Buffer)
 	var err error
@@ -58,6 +60,39 @@ func format(kill *zkill.ZKill, channel util.Channel) (messageParams slack.PostMe
 		d.IsSolo = true
 	} else {
 		d.IsLoss = false
+	}
+
+	// Compile list of corporations involved from attackers, ignoring duplicates
+	for a := range kill.Killmail.Attackers {
+		okToAdd := true
+		for c := range d.CorpsInvolved {
+			if kill.Killmail.Attackers[a].Corporation.Name == d.CorpsInvolved[c] {
+				okToAdd = false
+				break
+			}
+		}
+		if okToAdd {
+			d.CorpsInvolved = append(d.CorpsInvolved, kill.Killmail.Attackers[a].Corporation.Name)
+		}
+	}
+
+	// Compile list of alliances involved from attackers, ignoring duplicates
+	for a := range kill.Killmail.Attackers {
+		okToAdd := true
+		for c := range d.AlliInvolved {
+			// Do not add blank alliances (corp is not in an alliance)
+			if kill.Killmail.Attackers[a].Alliance.Name == "" {
+				okToAdd = false
+				break
+			}
+			if kill.Killmail.Attackers[a].Alliance.Name == d.AlliInvolved[c] {
+				okToAdd = false
+				break
+			}
+		}
+		if okToAdd {
+			d.AlliInvolved = append(d.AlliInvolved, kill.Killmail.Attackers[a].Alliance.Name)
+		}
 	}
 
 	// Execute templates

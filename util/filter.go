@@ -10,7 +10,7 @@ import (
  */
 
 // WithinFilter returns true if the kill is within the channel's filter, false otherwise
-func WithinFilter(kill *zkill.ZKill, channel Channel) bool {
+func WithinFilter(kill *zkill.Kill, channel Channel) bool {
 	// KillID of 0 should be skipped as it means no kill was returned from RedisQ
 	if kill.KillID == 0 {
 		return false
@@ -28,7 +28,7 @@ func WithinFilter(kill *zkill.ZKill, channel Channel) bool {
 }
 
 // IsLoss returns true if the kill is a loss, false otherwise
-func IsLoss(kill *zkill.ZKill, channel Channel) bool {
+func IsLoss(kill *zkill.Kill, channel Channel) bool {
 	if characterOK(kill.Killmail.Victim.Character, channel) {
 		return true
 	}
@@ -42,7 +42,7 @@ func IsLoss(kill *zkill.ZKill, channel Channel) bool {
 }
 
 // IsAwox returns true if the kill was an Awox, partial or otherwise. False if not.
-func IsAwox(kill *zkill.ZKill, channel Channel) bool {
+func IsAwox(kill *zkill.Kill, channel Channel) bool {
 	if IsLoss(kill, channel) {
 		for a := range kill.Killmail.Attackers {
 			if characterOK(kill.Killmail.Attackers[a].Character, channel) {
@@ -59,7 +59,7 @@ func IsAwox(kill *zkill.ZKill, channel Channel) bool {
 	return false
 }
 
-func valueOK(kill *zkill.ZKill, channel Channel) bool {
+func valueOK(kill *zkill.Kill, channel Channel) bool {
 	// If kill value is within [MinimumValue, MaximumValue] return true
 	if kill.Zkb.TotalValue >= float32(channel.MinimumValue) && kill.Zkb.TotalValue <= float32(channel.MaximumValue) {
 		return true
@@ -72,7 +72,7 @@ func valueOK(kill *zkill.ZKill, channel Channel) bool {
 }
 
 // returns true if ship is NOT excluded by name, false otherwise
-func shipOK(kill *zkill.ZKill, channel Channel) bool {
+func shipOK(kill *zkill.Kill, channel Channel) bool {
 	for ship := range channel.ExcludedShips {
 		if kill.Killmail.Victim.ShipType.Name == channel.ExcludedShips[ship] {
 			return false
@@ -84,7 +84,7 @@ func shipOK(kill *zkill.ZKill, channel Channel) bool {
 	return true
 }
 
-func involvedOK(kill *zkill.ZKill, channel Channel) bool {
+func involvedOK(kill *zkill.Kill, channel Channel) bool {
 	if characterOK(kill.Killmail.Victim.Character, channel) {
 		return true
 	}
