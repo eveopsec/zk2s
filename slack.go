@@ -66,10 +66,10 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 	// Compile list of pilots involved, with special text formatting
 	for a := range kill.Killmail.Attackers {
 		//Special Formatting
-		if {{$attacker.finalBlow}} == 1
-			{{$attacker.Character.Name}}, //Regular Attacker
+		if {{kill.Killmail.attacker.finalBlow}} == 1
+			{{kill.Killmail.attacker.Character.Name}}, //Regular Attacker
 		else
-			*{{$attacker.Character.Name}}*, //Final Blow
+			*{{kill.Killmail.attacker.Character.Name}}*, //Final Blow
 		{{end}}
 		//End Special formatting
 		okToAdd := true
