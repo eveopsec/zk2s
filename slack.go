@@ -29,6 +29,8 @@ type data struct {
 	IsSolo        bool
 	CorpsInvolved []string
 	AlliInvolved  []string
+	PilotInvolved []string
+	FinalBlowPilot []string
 }
 
 // PostKill applys the filter(s) to the kill, and posts the kill to slack
@@ -56,12 +58,32 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 	d.Killmail = kill.Killmail
 	d.TotalValue = humanize.Comma(int64(kill.Zkb.TotalValue))
 	d.IsLoss = util.IsLoss(kill, channel)
+	//Solo kill testing
 	if len(kill.Killmail.Attackers) == 1 {
 		d.IsSolo = true
 	} else {
 		d.IsLoss = false
 	}
-
+	
+	// Compile list of pilots involved, if not final blow
+	for a := range kill.Killmail.Attackers {
+		if kill.Killmail.Attackers[a].FinalBlow == false {
+			okToAdd := true
+			if okToAdd {
+				d.PilotInvolved= append(d.PilotInvolved, kill.Killmail.Attackers[a].Character.Name)
+			}
+		}
+	}
+	//Compile the list for the final blow pilot
+	for a := range kill.Killmail.Attackers {
+		if kill.Killmail.Attackers[a].FinalBlow == true {
+			okToAdd :=true
+			if okToAdd {
+				d.FinalBlowPilot= append(d.FinalBlowPilot, kill.Killmail.Attackers[a].Character.Name)
+			}
+			
+		}
+	}
 	// Compile list of corporations involved from attackers, ignoring duplicates
 	for a := range kill.Killmail.Attackers {
 		okToAdd := true
@@ -81,7 +103,7 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 		okToAdd := true
 		for c := range d.AlliInvolved {
 			// Do not add blank alliances (corp is not in an alliance)
-			if kill.Killmail.Attackers[a].Alliance.Name == "" {
+			if kill.Killmail.Attackers[a].Alliance.Name == " ," {
 				okToAdd = false
 				break
 			}
@@ -111,6 +133,7 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 	attch.TitleLink = "https://zkillboard.com/kill/" + strconv.Itoa(kill.KillID) + "/"
 	attch.ThumbURL = "http://image.eveonline.com/render/" + strconv.Itoa(kill.Killmail.Victim.ShipType.ID) + "_64.png"
 	attch.Text = body.String()
+	//Color Coding
 	if util.IsLoss(kill, channel) {
 		attch.Color = "danger"
 	} else {

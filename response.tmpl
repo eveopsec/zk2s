@@ -15,6 +15,8 @@
 {{end}}
 
 {{define "killbody"}}
-*_Total Value:_ {{.TotalValue}} ISK*
-*_Number Involved:_ {{len .Killmail.Attackers}}*
+*Total Value:* {{.TotalValue}} ISK
+*Pilots Involved ({{len .Killmail.Attackers}}):* _*{{range $attacker := index .FinalBlowPilot}}{{$attacker}}{{end}}*_, {{range $attacker := index .PilotInvolved}}{{$attacker}},{{end}}
+*Corporations Involved ({{len .CorpsInvolved}}):* {{range $corp := index .CorpsInvolved}}{{$corp}}, {{end}}
+*Alliances Involved ({{len .AlliInvolved}}):* {{range $alli := index .AlliInvolved}}{{$alli}}, {{end}}
 {{end}}
