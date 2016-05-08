@@ -81,7 +81,7 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 		okToAdd := true
 		for c := range d.AlliInvolved {
 			// Do not add blank alliances (corp is not in an alliance)
-			if kill.Killmail.Attackers[a].Alliance.Name == "" {
+			if kill.Killmail.Attackers[a].Alliance.Name == " ,"||","||" " {
 				okToAdd = false
 				break
 			}
