@@ -67,39 +67,17 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 	
 	// Compile list of pilots involved, if not final blow
 	for a := range kill.Killmail.Attackers {
-		if kill.Killmail.attacker.finalBlow==1 {
+		if kill.Killmail.Attackers[a].FinalBlow == false {
 			okToAdd := true
-			for c := range d.PilotInvolved[c] {
-				// Do not add blank pilots
-				if kill.Killmail.Attackers[a].Character.Name == " ,"||","||" " {
-					okToAdd = false
-					break
-				}
-				if kill.Killmail.Attackers[a].Character.Name == d.PilotInvolved[c] {
-					okToAdd = false
-					break
-				}
-			}
 			if okToAdd {
 				d.PilotInvolved= append(d.PilotInvolved, kill.Killmail.Attackers[a].Character.Name)
 			}
 		}
 	}
 	//Compile the list for the final blow pilot
-	for a:= range kill.Killmail.Attackers {
-		if kill.Killmail.attacker.final==0 {
+	for a := range kill.Killmail.Attackers {
+		if kill.Killmail.Attackers[a].FinalBlow == true {
 			okToAdd :=true
-			for c := range d.FinalBlowPilot[c] {
-				// Do not add blank pilots
-				if kill.Killmail.Attackers[a].Character.Name == " ,"||","||" " {
-					okToAdd = false
-					break
-				}
-				if kill.Killmail.Attackers[a].Character.Name == d.FinalBlowPilot[c] {
-					okToAdd = false
-					break
-				}
-			}
 			if okToAdd {
 				d.FinalBlowPilot= append(d.FinalBlowPilot, kill.Killmail.Attackers[a].Character.Name)
 			}
@@ -125,7 +103,7 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 		okToAdd := true
 		for c := range d.AlliInvolved {
 			// Do not add blank alliances (corp is not in an alliance)
-			if kill.Killmail.Attackers[a].Alliance.Name == " ,"||","||" " {
+			if kill.Killmail.Attackers[a].Alliance.Name == " ," {
 				okToAdd = false
 				break
 			}
