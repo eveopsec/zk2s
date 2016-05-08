@@ -56,12 +56,39 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 	d.Killmail = kill.Killmail
 	d.TotalValue = humanize.Comma(int64(kill.Zkb.TotalValue))
 	d.IsLoss = util.IsLoss(kill, channel)
+	//Solo kill testing
 	if len(kill.Killmail.Attackers) == 1 {
 		d.IsSolo = true
 	} else {
 		d.IsLoss = false
 	}
-
+	
+	// Compile list of pilots involved, with special text formatting
+	for a := range kill.Killmail.Attackers {
+		//Special Formatting
+		if {{$attacker.finalBlow}} == 1
+			{{$attacker.Character.Name}}, //Regular Attacker
+		else
+			*{{$attacker.Character.Name}}*, //Final Blow
+		{{end}}
+		//End Special formatting
+		okToAdd := true
+		for c := range d.PilotInvolved[c] {
+			// Do not add blank pilots
+			if kill.Killmail.Attackers[a].Character.Name == " ,"||","||" " {
+				okToAdd = false
+				break
+			}
+			if kill.Killmail.Attackers[a].Character.Name == d.PilotInvolved[c] {
+				okToAdd = false
+				break
+			}
+		}
+		if okToAdd {
+			d.PilotInvolved= append(d.PilotInvolved, kill.Killmail.Attackers[a].Character.Name)
+		}
+	}
+	
 	// Compile list of corporations involved from attackers, ignoring duplicates
 	for a := range kill.Killmail.Attackers {
 		okToAdd := true
@@ -111,6 +138,7 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 	attch.TitleLink = "https://zkillboard.com/kill/" + strconv.Itoa(kill.KillID) + "/"
 	attch.ThumbURL = "http://image.eveonline.com/render/" + strconv.Itoa(kill.Killmail.Victim.ShipType.ID) + "_64.png"
 	attch.Text = body.String()
+	//Color Coding
 	if util.IsLoss(kill, channel) {
 		attch.Color = "danger"
 	} else {
