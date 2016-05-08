@@ -29,6 +29,8 @@ type data struct {
 	IsSolo        bool
 	CorpsInvolved []string
 	AlliInvolved  []string
+	PilotInvolved []string
+	FinalBlowPilot []string
 }
 
 // PostKill applys the filter(s) to the kill, and posts the kill to slack
@@ -63,32 +65,46 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 		d.IsLoss = false
 	}
 	
-	// Compile list of pilots involved, with special text formatting
+	// Compile list of pilots involved, if not final blow
 	for a := range kill.Killmail.Attackers {
-		//Special Formatting
-		if {{kill.Killmail.attacker.finalBlow}} == 1
-			{{kill.Killmail.attacker.Character.Name}}, //Regular Attacker
-		else
-			*{{kill.Killmail.attacker.Character.Name}}*, //Final Blow
-		{{end}}
-		//End Special formatting
-		okToAdd := true
-		for c := range d.PilotInvolved[c] {
-			// Do not add blank pilots
-			if kill.Killmail.Attackers[a].Character.Name == " ,"||","||" " {
-				okToAdd = false
-				break
+		if kill.Killmail.attacker.finalBlow==1 {
+			okToAdd := true
+			for c := range d.PilotInvolved[c] {
+				// Do not add blank pilots
+				if kill.Killmail.Attackers[a].Character.Name == " ,"||","||" " {
+					okToAdd = false
+					break
+				}
+				if kill.Killmail.Attackers[a].Character.Name == d.PilotInvolved[c] {
+					okToAdd = false
+					break
+				}
 			}
-			if kill.Killmail.Attackers[a].Character.Name == d.PilotInvolved[c] {
-				okToAdd = false
-				break
+			if okToAdd {
+				d.PilotInvolved= append(d.PilotInvolved, kill.Killmail.Attackers[a].Character.Name)
 			}
-		}
-		if okToAdd {
-			d.PilotInvolved= append(d.PilotInvolved, kill.Killmail.Attackers[a].Character.Name)
 		}
 	}
-	
+	for a:= range kill.Killmail.Attackers {
+		if kill.Killmail.attacker.final==0 {
+			okToAdd :=true
+			for c := range d.FinalBlowPilot[c] {
+				// Do not add blank pilots
+				if kill.Killmail.Attackers[a].Character.Name == " ,"||","||" " {
+					okToAdd = false
+					break
+				}
+				if kill.Killmail.Attackers[a].Character.Name == d.FinalBlowPilot[c] {
+					okToAdd = false
+					break
+				}
+			}
+			if okToAdd {
+				d.FinalBlowPilot= append(d.FinalBlowPilot, kill.Killmail.Attackers[a].Character.Name)
+			}
+			
+		}
+	}
 	// Compile list of corporations involved from attackers, ignoring duplicates
 	for a := range kill.Killmail.Attackers {
 		okToAdd := true
