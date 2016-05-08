@@ -85,6 +85,7 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 			}
 		}
 	}
+	//Compile the list for the final blow pilot
 	for a:= range kill.Killmail.Attackers {
 		if kill.Killmail.attacker.final==0 {
 			okToAdd :=true
