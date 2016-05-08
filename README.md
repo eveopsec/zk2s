@@ -2,8 +2,13 @@
 
 Application to post kills/losses from zKillboard to Slack in near real time by using zKillboard's RedisQ endpoint.
 
-## Version 0.2
-Get it while it's hot! See releases for release notes and binaries.
+## Version 0.3
+
+**Changes:**
+ - Involved Corporations and Alliances passed to templates.
+ - Updated for evelib API Changes
+ - Small log formatting changes
+ - Default template now inserts corporation name when no character exists for the victim (i.e. structures)
 
 ## Note
 
