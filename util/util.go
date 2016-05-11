@@ -155,6 +155,7 @@ func configureChannels(c *cli.Context) {
 		return
 	}
 	fmt.Println("Done. Configuration complete, zk2s is now configured to run.")
+	os.Exit(0)
 }
 
 func newChannel(c *cli.Context) {
