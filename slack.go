@@ -23,17 +23,17 @@ var t = template.Must(template.ParseGlob("response.tmpl"))
 
 // data is passed to template objects for defining how a slack post appears.
 type data struct {
-	Killmail      crest.Killmail
-	TotalValue    string
-	IsLoss        bool
-	IsSolo        bool
-	CorpsInvolved []string
-	AlliInvolved  []string
-	PilotInvolved []string
+	Killmail       crest.Killmail
+	TotalValue     string
+	IsLoss         bool
+	IsSolo         bool
+	CorpsInvolved  []string
+	AlliInvolved   []string
+	PilotInvolved  []string
 	FinalBlowPilot []string
 	FinalBlowCorp  []string
 	FinalBlowAlli  []string
-	TotalCorp	   []string
+	TotalCorp      []string
 	TotalAlli      []string
 }
 
@@ -68,7 +68,7 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 	} else {
 		d.IsLoss = false
 	}
-	
+
 	// Compile list of pilots involved, if not final blow
 	for a := range kill.Killmail.Attackers {
 		if kill.Killmail.Attackers[a].FinalBlow == false {
@@ -81,7 +81,7 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 	//Compile the list for the final blow pilot, mainly use for formatting commas on the post
 	for a := range kill.Killmail.Attackers {
 		if kill.Killmail.Attackers[a].FinalBlow == true {
-			okToAdd :=true
+			okToAdd := true
 			if okToAdd {
 				d.FinalBlowPilot = append(d.FinalBlowPilot, kill.Killmail.Attackers[a].Character.Name)
 				d.FinalBlowCorp = append(d.FinalBlowCorp, kill.Killmail.Attackers[a].Corporation.Name)
@@ -89,7 +89,7 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 				d.TotalCorp = append(d.TotalCorp, kill.Killmail.Attackers[a].Corporation.Name)
 				d.TotalAlli = append(d.TotalAlli, kill.Killmail.Attackers[a].Alliance.Name)
 			}
-			
+
 		}
 	}
 	// Compile list of corporations involved from attackers, ignoring duplicates
