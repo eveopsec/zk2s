@@ -111,8 +111,18 @@ func configure(c *cli.Context) {
 
 func configureInfo(c *cli.Context) {
 	fmt.Println("***************************************")
-	fmt.Println("CONFIGURATION")
+	fmt.Println("CONFIGURATION - INFO")
 	fmt.Println("***************************************")
+	if config != nil {
+		if config.UserAgent != "" || config.BotToken != "" {
+			fmt.Printf("UserAgent: %v\n", config.UserAgent)
+			fmt.Printf("BotToken: %v\n", config.BotToken)
+			fmt.Println("Overwrite these values? Y/n")
+			if !yesOrNo() {
+				configureChannels(c)
+			}
+		}
+	}
 	fmt.Println("Enter a UserAgent Name/E-mail (i.e. your/admin name). CANNOT be empty")
 	config.UserAgent = getInputString()
 	fmt.Println("Enter the auth token for Slack. This can be either a bot token(recommended) or user token.")
