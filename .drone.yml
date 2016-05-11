@@ -4,8 +4,3 @@ build:
     - go get
     - go build
     - go test
-notify:
-  slack:
-    webhook_url: $$SLACK_HOOK
-    channel: tech
-    username: Vivian
