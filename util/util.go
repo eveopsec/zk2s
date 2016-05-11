@@ -95,7 +95,7 @@ func configure(c *cli.Context) {
 				return
 			}
 			fmt.Printf("New configuration file created!\n\n")
-			configureBasic(c)
+			configureInfo(c)
 			return
 		} else {
 			fmt.Printf("Error - %v\n", err)
@@ -106,10 +106,10 @@ func configure(c *cli.Context) {
 	if !yesOrNo() {
 		return
 	}
-	configureBasic(c)
+	configureInfo(c)
 }
 
-func configureBasic(c *cli.Context) {
+func configureInfo(c *cli.Context) {
 	fmt.Println("***************************************")
 	fmt.Println("CONFIGURATION")
 	fmt.Println("***************************************")
