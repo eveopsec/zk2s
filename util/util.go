@@ -16,8 +16,6 @@ import (
  * Defines functions for configuring the application.
  */
 
-const ConfigFileName = "cfg.zk2s.json"
-
 var t = template.Must(template.ParseGlob("response.tmpl"))
 var config *Configuration
 var input = bufio.NewReader(os.Stdin)
@@ -26,14 +24,12 @@ var input = bufio.NewReader(os.Stdin)
 // marshalled in to Config
 func LoadConfig() (*Configuration, error) {
 	c := new(Configuration)
-	c.FileName = ConfigFileName
 	err := gonfig.Load(c)
 	return c, err
 }
 
 // Configuration defines zk2s' configuration
 type Configuration struct {
-	FileName  string
 	UserAgent string    `json:"userAgent"`
 	BotToken  string    `json:"botToken"`
 	Channels  []Channel `json:"channels"`
@@ -41,7 +37,7 @@ type Configuration struct {
 
 // File returns the file name/path for gonfig interface
 func (c *Configuration) File() string {
-	return c.FileName
+	return "cfg.zk2s.json"
 }
 
 // Save the configuration file
@@ -80,7 +76,6 @@ func RunConfigure(c *cli.Context) {
 func configure(c *cli.Context) {
 	var err error
 	config = new(Configuration)
-	config.FileName = ConfigFileName
 	err = gonfig.Load(config)
 	if err != nil {
 		if os.IsPermission(err) {

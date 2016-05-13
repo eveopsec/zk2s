@@ -57,10 +57,9 @@ func Run(c *cli.Context) {
 
 	// 1 - Load Configuration file
 	config = new(util.Configuration)
-	config.FileName = util.ConfigFileName
 	err = gonfig.Load(config)
 	if err != nil {
-		log.Fatalf("Unable to read %v with error %v", util.ConfigFileName, err)
+		log.Fatalf("Unable to read config with error %v", err)
 		os.Exit(1)
 	}
 	// 2 - Setup a new Slack Bot
