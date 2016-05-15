@@ -27,10 +27,18 @@ type data struct {
 	TotalValue    string
 	IsLoss        bool
 	IsSolo        bool
+	InAlli		  bool
+	LosingCorp	  string
+	LosingAlli	  string
 	CorpsInvolved []string
 	AlliInvolved  []string
 	PilotInvolved []string
 	FinalBlowPilot []string
+	FinalBlowCorp  []string
+	FinalBlowAlli  []string
+	TotalCorp	   []string
+	TotalAlli      []string
+	
 }
 
 // PostKill applys the filter(s) to the kill, and posts the kill to slack
@@ -64,22 +72,41 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 	} else {
 		d.IsLoss = false
 	}
+	//Testing to see if the victim is in an alliance
+	
+	if kill.Killmail.Victim.Alliance.Name != "" {
+			d.InAlli = true
+			d.LosingAlli = kill.Killmail.Victim.Alliance.Name
+	}
+	d.LosingCorp = kill.Killmail.Victim.Corporation.Name
 	
 	// Compile list of pilots involved, if not final blow
 	for a := range kill.Killmail.Attackers {
-		if kill.Killmail.Attackers[a].FinalBlow == false {
-			okToAdd := true
-			if okToAdd {
-				d.PilotInvolved= append(d.PilotInvolved, kill.Killmail.Attackers[a].Character.Name)
+		okToAdd := true
+		if kill.Killmail.Attackers[a].FinalBlow == true {
+			okToAdd = false
+		}
+		if kill.Killmail.Attackers[a].Character.Name == ""{
+			okToAdd = false
+		}
+		if okToAdd {
+			d.PilotInvolved = append(d.PilotInvolved, kill.Killmail.Attackers[a].Character.Name)
 			}
 		}
-	}
-	//Compile the list for the final blow pilot
+
+	//Compile the list for the final blow pilot, mainly use for formatting commas on the post
 	for a := range kill.Killmail.Attackers {
 		if kill.Killmail.Attackers[a].FinalBlow == true {
 			okToAdd :=true
+			if kill.Killmail.Attackers[a].Character.Name == ""{
+				okToAdd = false
+			}
 			if okToAdd {
-				d.FinalBlowPilot= append(d.FinalBlowPilot, kill.Killmail.Attackers[a].Character.Name)
+				d.FinalBlowPilot = append(d.FinalBlowPilot, kill.Killmail.Attackers[a].Character.Name)
+				d.FinalBlowCorp = append(d.FinalBlowCorp, kill.Killmail.Attackers[a].Corporation.Name)
+				d.FinalBlowAlli = append(d.FinalBlowAlli, kill.Killmail.Attackers[a].Alliance.Name)
+				d.TotalCorp = append(d.TotalCorp, kill.Killmail.Attackers[a].Corporation.Name)
+				d.TotalAlli = append(d.TotalAlli, kill.Killmail.Attackers[a].Alliance.Name)
 			}
 			
 		}
@@ -92,28 +119,43 @@ func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMes
 				okToAdd = false
 				break
 			}
-		}
-		if okToAdd {
-			d.CorpsInvolved = append(d.CorpsInvolved, kill.Killmail.Attackers[a].Corporation.Name)
+			if kill.Killmail.Attackers[a].Corporation.Name == d.FinalBlowCorp[c] {
+				okToAdd = false
+				break
+			}
+			if okToAdd {
+				d.CorpsInvolved = append(d.CorpsInvolved, kill.Killmail.Attackers[a].Corporation.Name)
+				d.TotalCorp = append(d.TotalCorp, kill.Killmail.Attackers[a].Corporation.Name)
+			}
 		}
 	}
-
 	// Compile list of alliances involved from attackers, ignoring duplicates
 	for a := range kill.Killmail.Attackers {
+		
 		okToAdd := true
+
 		for c := range d.AlliInvolved {
+			
 			// Do not add blank alliances (corp is not in an alliance)
-			if kill.Killmail.Attackers[a].Alliance.Name == " ," {
+			if kill.Killmail.Attackers[a].Alliance.Name == "" {
 				okToAdd = false
 				break
 			}
 			if kill.Killmail.Attackers[a].Alliance.Name == d.AlliInvolved[c] {
 				okToAdd = false
+				d.InAlli = true
 				break
 			}
-		}
-		if okToAdd {
-			d.AlliInvolved = append(d.AlliInvolved, kill.Killmail.Attackers[a].Alliance.Name)
+			if kill.Killmail.Attackers[a].Alliance.Name == d.FinalBlowAlli[c] {
+				okToAdd = false
+				d.InAlli = true
+				break
+			}
+			if okToAdd {
+				d.AlliInvolved = append(d.AlliInvolved, kill.Killmail.Attackers[a].Alliance.Name)
+				d.TotalAlli = append(d.TotalAlli, kill.Killmail.Attackers[a].Alliance.Name)
+				d.InAlli = true
+			}
 		}
 	}
 
