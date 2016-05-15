@@ -1,5 +1,7 @@
 # zk2s
 
+[![Build Status](http://build.vivace.io/api/badges/vivace-io/zk2s/status.svg)](http://build.vivace.io/vivace-io/zk2s)
+
 Application to post kills/losses from zKillboard to Slack in near real time by using zKillboard's RedisQ endpoint.
 
 ## Version 0.3
