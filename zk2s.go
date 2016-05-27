@@ -5,10 +5,10 @@ import (
 	"os"
 
 	"github.com/codegangsta/cli"
+	"github.com/eveopsec/zk2s/util"
 	"github.com/nlopes/slack"
 	"github.com/vivace-io/evelib/zkill"
 	"github.com/vivace-io/gonfig"
-	"github.com/vivace-io/zk2s/util"
 )
 
 /* zk2s.go
