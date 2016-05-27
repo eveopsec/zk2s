@@ -2,7 +2,7 @@ FROM golang:alpine
 
 RUN apk add --no-cache git
 
-RUN go get github.com/eveopsec/zk2s
+ADD . /go/src/github.com/eveopsec/zk2s
 
 WORKDIR /go/src/github.com/eveopsec/zk2s
 
