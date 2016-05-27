@@ -8,7 +8,7 @@ This application is independent of the OpSec Project and can be run without requ
 
 Previously hosted at vivace-io/zk2s, this project has been moved to this organization to group it with other Eve Online tools and applications.
 
-## Version 0.3
+## Version 0.4
 
 **Changes:**
  - Involved Corporations and Alliances passed to templates.

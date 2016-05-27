@@ -15,7 +15,7 @@ import (
  * Main entrypoint and controller for zk2s
  */
 
-const VERSION = "0.3"
+const VERSION = "0.4"
 
 var CONTRIBUTORS = []cli.Author{
 	cli.Author{
