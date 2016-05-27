@@ -11,10 +11,9 @@ Previously hosted at vivace-io/zk2s, this project has been moved to this organiz
 ## Version 0.4
 
 **Changes:**
- - Involved Corporations and Alliances passed to templates.
- - Updated for evelib API Changes
- - Small log formatting changes
- - Default template now inserts corporation name when no character exists for the victim (i.e. structures)
+ - Improved default template, removing unintentional formatting characters among other things.
+ - Repository ownership migration -> imports adjusted
+ - Zuke started discovering how git works.
 
 ## Note
 
