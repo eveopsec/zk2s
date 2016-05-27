@@ -4,6 +4,10 @@
 
 Application to post kills/losses from zKillboard to Slack in near real time by using zKillboard's RedisQ endpoint.
 
+This application is independent of the OpSec Project and can be run without requiring other services
+
+Previously hosted at vivace-io/zk2s, this project has been moved to this organization to group it with other Eve Online tools and applications.
+
 ## Version 0.3
 
 **Changes:**
