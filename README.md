@@ -24,6 +24,7 @@ Feedback and contributions are always welcome. Please create a new issue or pull
 Read the Installing/Configuration section below for help in setting up the application.
 
 Todo:
+ - [ ] Add to Dockerhub
  - [ ] Verify filters work in various configurations.
  - [ ] Develop some method of testing without having to explode myself.
  - [ ] Make everything look better and more organized.
