@@ -5,17 +5,17 @@ import (
 	"os"
 
 	"github.com/codegangsta/cli"
+	"github.com/eveopsec/zk2s/util"
 	"github.com/nlopes/slack"
 	"github.com/vivace-io/evelib/zkill"
 	"github.com/vivace-io/gonfig"
-	"github.com/vivace-io/zk2s/util"
 )
 
 /* zk2s.go
  * Main entrypoint and controller for zk2s
  */
 
-const VERSION = "0.3"
+const VERSION = "0.4"
 
 var CONTRIBUTORS = []cli.Author{
 	cli.Author{
@@ -57,10 +57,9 @@ func Run(c *cli.Context) {
 
 	// 1 - Load Configuration file
 	config = new(util.Configuration)
-	config.FileName = util.ConfigFileName
 	err = gonfig.Load(config)
 	if err != nil {
-		log.Fatalf("Unable to read %v with error %v", util.ConfigFileName, err)
+		log.Fatalf("Unable to read config with error %v", err)
 		os.Exit(1)
 	}
 	// 2 - Setup a new Slack Bot

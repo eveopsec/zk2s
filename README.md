@@ -4,13 +4,16 @@
 
 Application to post kills/losses from zKillboard to Slack in near real time by using zKillboard's RedisQ endpoint.
 
-## Version 0.3
+This application is independent of the OpSec Project and can be run without requiring other services
+
+Previously hosted at vivace-io/zk2s, this project has been moved to this organization to group it with other Eve Online tools and applications.
+
+## Version 0.4
 
 **Changes:**
- - Involved Corporations and Alliances passed to templates.
- - Updated for evelib API Changes
- - Small log formatting changes
- - Default template now inserts corporation name when no character exists for the victim (i.e. structures)
+ - Improved default template, removing unintentional formatting characters among other things.
+ - Repository ownership migration -> imports adjusted
+ - Zuke started discovering how git works.
 
 ## Note
 
@@ -21,6 +24,7 @@ Feedback and contributions are always welcome. Please create a new issue or pull
 Read the Installing/Configuration section below for help in setting up the application.
 
 Todo:
+ - [ ] Add to Dockerhub
  - [ ] Verify filters work in various configurations.
  - [ ] Develop some method of testing without having to explode myself.
  - [ ] Make everything look better and more organized.
