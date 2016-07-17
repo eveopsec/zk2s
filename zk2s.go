@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/codegangsta/cli"
-	"github.com/eveopsec/zk2s/util"
+	"github.com/eveopsec/zk2s/config"
 	"github.com/nlopes/slack"
+	"github.com/urfave/cli"
 	"github.com/vivace-io/evelib/zkill"
 	"github.com/vivace-io/gonfig"
 )
@@ -15,7 +15,7 @@ import (
  * Main entrypoint and controller for zk2s
  */
 
-const VERSION = "0.4"
+const VERSION = "0.5"
 
 var CONTRIBUTORS = []cli.Author{
 	cli.Author{
@@ -26,7 +26,7 @@ var CONTRIBUTORS = []cli.Author{
 	},
 }
 
-var config *util.Configuration
+var cfg *config.Configuration
 var bot *slack.Client
 
 func main() {
@@ -34,36 +34,34 @@ func main() {
 	app.Authors = CONTRIBUTORS
 	app.Version = VERSION
 	app.Name = "zk2s"
-	app.Usage = "a Slack bot for posting kills from zKillboard to slack in near-real time"
+	app.Usage = "A Slack bot for posting kills from zKillboard to slack in near-real time."
 	app.Commands = []cli.Command{
-		cli.Command{
-			Name:   "start",
-			Usage:  "start zk2s application",
-			Action: Run,
-		},
-		cli.Command{
-			Name:   "configure",
-			Usage:  "configure zk2s application to be run",
-			Action: util.RunConfigure,
-		},
+		cmdRun,
+		config.CMD_Config,
 	}
 	app.Run(os.Args)
 }
 
+var cmdRun = cli.Command{
+	Name:   "run",
+	Usage:  "run the zk2s application",
+	Action: Run,
+}
+
 // Run zk2s
-func Run(c *cli.Context) {
+func Run(c *cli.Context) error {
 	log.Printf("%v version %v", c.App.Name, c.App.Version)
 	var err error
 
 	// 1 - Load Configuration file
-	config = new(util.Configuration)
-	err = gonfig.Load(config)
+	cfg = new(config.Configuration)
+	err = gonfig.Load(cfg)
 	if err != nil {
 		log.Fatalf("Unable to read config with error %v", err)
 		os.Exit(1)
 	}
 	// 2 - Setup a new Slack Bot
-	bot = slack.New(config.BotToken)
+	bot = slack.New(cfg.BotToken)
 	authResp, err := bot.AuthTest()
 	if err != nil {
 		log.Fatalf("Unable to authenticate with Slack - %v", err)
@@ -75,7 +73,7 @@ func Run(c *cli.Context) {
 	errc := make(chan error, 5)
 	killc := make(chan zkill.Kill, 10)
 	zClient := zkill.NewRedisQ()
-	zClient.UserAgent = config.UserAgent
+	zClient.UserAgent = cfg.UserAgent
 	zClient.FetchKillmails(killc, errc)
 	handleKills(killc)
 	handleErrors(errc)

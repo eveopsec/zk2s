@@ -10,6 +10,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/vivace-io/evelib/crest"
 
+	"github.com/eveopsec/zk2s/config"
 	"github.com/eveopsec/zk2s/util"
 	"github.com/nlopes/slack"
 	"github.com/vivace-io/evelib/zkill"
@@ -44,18 +45,18 @@ type data struct {
 // only if the kill is within the configured filters.
 func PostKill(kill *zkill.Kill) {
 	// For each filter defined in configuration,
-	for c := range config.Channels {
-		if util.WithinFilter(kill, config.Channels[c]) {
-			params := format(kill, config.Channels[c])
-			log.Printf("Posting kill %v to channel %v", kill.KillID, config.Channels[c].Name)
-			post(config.Channels[c].Name, params)
+	for c := range cfg.Channels {
+		if util.WithinFilter(kill, cfg.Channels[c]) {
+			params := format(kill, cfg.Channels[c])
+			log.Printf("Posting kill %v to channel %v", kill.KillID, cfg.Channels[c].Name)
+			post(cfg.Channels[c].Name, params)
 		}
 	}
 }
 
 // format loads the formatting template and applies formatting
 // rules from the Configuration object.
-func format(kill *zkill.Kill, channel util.Channel) (messageParams slack.PostMessageParameters) {
+func format(kill *zkill.Kill, channel config.Channel) (messageParams slack.PostMessageParameters) {
 	title := new(bytes.Buffer)
 	body := new(bytes.Buffer)
 	var err error
