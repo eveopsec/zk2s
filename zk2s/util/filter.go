@@ -1,7 +1,7 @@
 package util
 
 import (
-	"github.com/eveopsec/zk2s/config"
+	"github.com/eveopsec/zk2s/zk2s/config"
 	"github.com/vivace-io/evelib/crest"
 	"github.com/vivace-io/evelib/zkill"
 )

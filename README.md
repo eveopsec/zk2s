@@ -8,12 +8,13 @@ This application is independent of the OpSec Project and can be run without requ
 
 Previously hosted at vivace-io/zk2s, this project has been moved to this organization to group it with other Eve Online tools and applications.
 
-## Version 0.4
+## Version 0.5
 
 **Changes:**
- - Improved default template, removing unintentional formatting characters among other things.
- - Repository ownership migration -> imports adjusted
- - Zuke started discovering how git works.
+ - Code refactoring/cleanup
+ - Changes to CLI for configuration setup
+ - Moved primary functionality to a sub package, so that the application can be used standalone or incorporated in to other applications.
+ - Added flag to allow for template file path to be set (defaults to working/executable directory if not specified)
 
 ## Note
 
@@ -24,11 +25,8 @@ Feedback and contributions are always welcome. Please create a new issue or pull
 Read the Installing/Configuration section below for help in setting up the application.
 
 Todo:
- - [ ] Add to Dockerhub
- - [ ] Verify filters work in various configurations.
  - [ ] Develop some method of testing without having to explode myself.
  - [ ] Make everything look better and more organized.
- - [ ] Clean up/organize `util/util.go`
  - [ ] Allow already configured channels to inspected/edited.
  - [ ] Command/Option for testing configuration.
 
@@ -42,7 +40,7 @@ To install, you can either install from source, or download the binary from rele
 You will need to:
  1. Install or have installed the latest version of Go installed, with the environment properly configured. (see [this document](https://golang.org/doc/install) for more information on that process).
  2. Run `go get -u github.com/vivace-io/zk2s` to retrieve the source and its dependencies.
- 3. Run `zk2s configure` to configure your setup
+ 3. Run `zk2s configure assistant` to run the configuration setup
  4. Run `zk2s start` to run the application.
 
 ## Configuring and Customizing

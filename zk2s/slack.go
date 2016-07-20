@@ -1,4 +1,4 @@
-package main
+package zk2s
 
 import (
 	"bytes"
@@ -10,8 +10,8 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/vivace-io/evelib/crest"
 
-	"github.com/eveopsec/zk2s/config"
-	"github.com/eveopsec/zk2s/util"
+	"github.com/eveopsec/zk2s/zk2s/config"
+	"github.com/eveopsec/zk2s/zk2s/util"
 	"github.com/nlopes/slack"
 	"github.com/vivace-io/evelib/zkill"
 )
@@ -22,7 +22,20 @@ import (
 
 var t = template.Must(template.ParseGlob("response.tmpl"))
 
-// data is passed to template objects for defining how a slack post appears.
+// TemplateFromPath tries to load the template from the path provided.
+// By default, the application assumes that the template is in the same
+// directory as the executable.
+func TemplateFromPath(path string) error {
+	var err error
+	t, err = template.ParseGlob(path)
+	if err != nil {
+		return err
+	}
+	t = template.Must(t, err)
+	return err
+}
+
+// data is passed to templates for defining how a slack post appears.
 type data struct {
 	Killmail       crest.Killmail
 	TotalValue     string
