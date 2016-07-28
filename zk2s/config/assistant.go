@@ -1,67 +1,18 @@
-// Package util contains definitions for filtering kills and loading configuration.
-package util
+package config
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"strings"
-	"text/template"
 
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"github.com/vivace-io/gonfig"
 )
 
-/* util/util.go
- * Defines functions for configuring the application.
- */
-
-const ConfigFileName = "cfg.zk2s.json"
-
-var t = template.Must(template.ParseGlob("response.tmpl"))
 var config *Configuration
-var input = bufio.NewReader(os.Stdin)
 
-// LoadConfig reads the configuration file and returns it,
-// marshalled in to Config
-func LoadConfig() (*Configuration, error) {
-	c := new(Configuration)
-	c.FileName = ConfigFileName
-	err := gonfig.Load(c)
-	return c, err
-}
-
-// Configuration defines zk2s' configuration
-type Configuration struct {
-	FileName  string
-	UserAgent string    `json:"userAgent"`
-	BotToken  string    `json:"botToken"`
-	Channels  []Channel `json:"channels"`
-}
-
-// File returns the file name/path for gonfig interface
-func (c *Configuration) File() string {
-	return c.FileName
-}
-
-// Save the configuration file
-func (c *Configuration) Save() error {
-	return gonfig.Save(c)
-}
-
-// Channel defines the configuration for a slack channel, including its filters
-type Channel struct {
-	Name                string   `json:"channelName"`
-	MinimumValue        int      `json:"minimumValue"`
-	MaximumValue        int      `json:"maximumValue"`
-	IncludeCharacters   []string `json:"includeCharacters"`
-	IncludeCorporations []string `json:"includeCorporations"`
-	IncludeAlliances    []string `json:"includeAlliance"`
-	ExcludedShips       []string `json:"excludedShips"`
-}
-
-// RunConfigure runs configuration CLI process
-func RunConfigure(c *cli.Context) {
+// RunAssistant runs configuration CLI process
+func RunAssistant(c *cli.Context) error {
 	// TODO - implment config validation and option
 	fmt.Println("***************************************")
 	fmt.Printf("CONFIGURE %v VERSION %v\n", c.App.Name, c.App.Version)
@@ -74,13 +25,12 @@ func RunConfigure(c *cli.Context) {
 	if option == 1 {
 		configure(c)
 	}
-	return
+	return nil
 }
 
 func configure(c *cli.Context) {
 	var err error
-	config = new(Configuration)
-	config.FileName = ConfigFileName
+	config = &Configuration{}
 	err = gonfig.Load(config)
 	if err != nil {
 		if os.IsPermission(err) {
@@ -95,7 +45,7 @@ func configure(c *cli.Context) {
 				return
 			}
 			fmt.Printf("New configuration file created!\n\n")
-			configureBasic(c)
+			configureInfo(c)
 			return
 		} else {
 			fmt.Printf("Error - %v\n", err)
@@ -106,13 +56,23 @@ func configure(c *cli.Context) {
 	if !yesOrNo() {
 		return
 	}
-	configureBasic(c)
+	configureInfo(c)
 }
 
-func configureBasic(c *cli.Context) {
+func configureInfo(c *cli.Context) {
 	fmt.Println("***************************************")
-	fmt.Println("CONFIGURATION")
+	fmt.Println("CONFIGURATION - INFO")
 	fmt.Println("***************************************")
+	if config != nil {
+		if config.UserAgent != "" || config.BotToken != "" {
+			fmt.Printf("UserAgent: %v\n", config.UserAgent)
+			fmt.Printf("BotToken: %v\n", config.BotToken)
+			fmt.Println("Overwrite these values? Y/n")
+			if !yesOrNo() {
+				configureChannels(c)
+			}
+		}
+	}
 	fmt.Println("Enter a UserAgent Name/E-mail (i.e. your/admin name). CANNOT be empty")
 	config.UserAgent = getInputString()
 	fmt.Println("Enter the auth token for Slack. This can be either a bot token(recommended) or user token.")
@@ -145,6 +105,7 @@ func configureChannels(c *cli.Context) {
 		return
 	}
 	fmt.Println("Done. Configuration complete, zk2s is now configured to run.")
+	os.Exit(0)
 }
 
 func newChannel(c *cli.Context) {

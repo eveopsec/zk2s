@@ -16,11 +16,16 @@
 
 {{define "killbody"}}
 *Total Value:* {{.TotalValue}} ISK
-{{if .IsSolo}}*Pilots Involved ({{len .Killmail.Attackers}}):* _*{{range $attacker := index .FinalBlowPilot}}{{$attacker}}{{end}}*_
-*Corporations Involved ({{len .TotalCorp}}):* _*{{range $corp := index .FinalBlowCorp}}{{$corp}}{{end}}*_
-*Alliances Involved ({{len .TotalAlli}}):* _*{{range $alli := index .FinalBlowAlli}}{{$alli}}{{end}}*_
-{{else}}*Pilots Involved ({{len .Killmail.Attackers}}):* _*{{range $attacker := index .FinalBlowPilot}}{{$attacker}}{{end}}*_ {{range $attacker := index .PilotInvolved}}, {{$attacker}} {{end}}
-*Corporations Involved ({{len .TotalCorp}}):* _*{{range $corp := index .FinalBlowCorp}}{{$corp}}{{end}}*_ {{range $corp := index .CorpsInvolved}}, {{$corp}} {{end}}
-*Alliances Involved ({{len .TotalAlli}}):* _*{{range $alli := index .FinalBlowAlli}}{{$alli}}{{end}}*_ {{range $alli := index .AlliInvolved}}, {{$alli}} {{end}}
-	{{end}}
+{{if .IsSolo}}
+*Pilots Involved ({{len .Killmail.Attackers}}):* {{range $attacker := index .FinalBlowPilot}}{{$attacker}}{{end}}^
+*Corporations Involved ({{len .TotalCorp}}):* {{range $corp := index .FinalBlowCorp}}{{$corp}}{{end}}^, {{.LosingCorp}}
+{{if .InAlli}}*Alliances Involved ({{len .TotalAlli}}):* {{range $alli := index .FinalBlowAlli}}{{$alli}}{{end}}^, {{.LosingAlli}}
+{{end}}
+{{else}}
+*Pilots Involved ({{len .Killmail.Attackers}}):* {{range $attacker := index .FinalBlowPilot}}{{$attacker}}{{end}}^{{range $attacker := index .PilotInvolved}}, {{$attacker}}{{end}}
+*Corporations Involved ({{len .TotalCorp}}):* {{range $corp := index .FinalBlowCorp}}{{$corp}}{{end}}^, {{.LosingCorp}}(*V*){{range $corp := index .CorpsInvolved}}, {{$corp}}{{end}}
+{{if .InAlli}}*Alliances Involved ({{len .TotalAlli}}):* {{range $alli := index .FinalBlowAlli}}{{$alli}}{{end}}^, {{.LosingAlli}}(*V*){{range $alli := index .AlliInvolved}}, {{$alli}}{{end}}
+{{end}}
+{{end}}
+^ Final Blow
 {{end}}

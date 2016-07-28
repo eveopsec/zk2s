@@ -4,13 +4,17 @@
 
 Application to post kills/losses from zKillboard to Slack in near real time by using zKillboard's RedisQ endpoint.
 
-## Version 0.3
+This application is independent of the OpSec Project and can be run without requiring other services
+
+Previously hosted at vivace-io/zk2s, this project has been moved to this organization to group it with other Eve Online tools and applications.
+
+## Version 0.5
 
 **Changes:**
- - Involved Corporations and Alliances passed to templates.
- - Updated for evelib API Changes
- - Small log formatting changes
- - Default template now inserts corporation name when no character exists for the victim (i.e. structures)
+ - Code refactoring/cleanup
+ - Changes to CLI for configuration setup
+ - Moved primary functionality to a sub package, so that the application can be used standalone or incorporated in to other applications.
+ - Added flag to allow for template file path to be set (defaults to working/executable directory if not specified)
 
 ## Note
 
@@ -21,10 +25,8 @@ Feedback and contributions are always welcome. Please create a new issue or pull
 Read the Installing/Configuration section below for help in setting up the application.
 
 Todo:
- - [ ] Verify filters work in various configurations.
  - [ ] Develop some method of testing without having to explode myself.
  - [ ] Make everything look better and more organized.
- - [ ] Clean up/organize `util/util.go`
  - [ ] Allow already configured channels to inspected/edited.
  - [ ] Command/Option for testing configuration.
 
@@ -38,7 +40,7 @@ To install, you can either install from source, or download the binary from rele
 You will need to:
  1. Install or have installed the latest version of Go installed, with the environment properly configured. (see [this document](https://golang.org/doc/install) for more information on that process).
  2. Run `go get -u github.com/vivace-io/zk2s` to retrieve the source and its dependencies.
- 3. Run `zk2s configure` to configure your setup
+ 3. Run `zk2s configure assistant` to run the configuration setup
  4. Run `zk2s start` to run the application.
 
 ## Configuring and Customizing
