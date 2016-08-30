@@ -5,6 +5,7 @@ import (
 
 	"github.com/nlopes/slack"
 	"github.com/urfave/cli"
+	"github.com/vivace-io/evelib/zkill"
 	"github.com/vivace-io/gonfig"
 )
 
@@ -38,10 +39,8 @@ func (this *Configuration) Get() (app Application, err error) {
 }
 
 type Application struct {
-	UserAgent  string        `json:"userAgent"`
-	Teams      []Team        `json:"teams"`
-	Bot        *slack.Client `json:"-"`
-	FailedAuth bool          `json:"-"`
+	UserAgent string `json:"userAgent"`
+	Teams     []Team `json:"teams"`
 }
 
 // File returns the file name/path for gonfig interface
@@ -55,17 +54,22 @@ func (this *Application) Save() error {
 }
 
 type Team struct {
-	BotToken string    `json:"botToken"`
-	Channels []Channel `json:"channels"`
+	BotToken   string        `json:"botToken"`
+	Channels   []*Channel    `json:"channels"`
+	Bot        *slack.Client `json:"-"`
+	FailedAuth bool          `json:"-"`
 }
 
 // Channel defines the configuration for a slack channel in a team, including its filters
 type Channel struct {
-	Name                string   `json:"channelName"`
-	MinimumValue        int      `json:"minimumValue"`
-	MaximumValue        int      `json:"maximumValue"`
-	IncludeCharacters   []string `json:"includeCharacters"`
-	IncludeCorporations []string `json:"includeCorporations"`
-	IncludeAlliances    []string `json:"includeAlliance"`
-	ExcludedShips       []string `json:"excludedShips"`
+	Name                string       `json:"channelName"`
+	InBulk              bool         `json:"inBulk"`
+	BulkPostInterval    int          `json:"bulkPostInterval"`
+	MinimumValue        int          `json:"minimumValue"`
+	MaximumValue        int          `json:"maximumValue"`
+	IncludeCharacters   []string     `json:"includeCharacters"`
+	IncludeCorporations []string     `json:"includeCorporations"`
+	IncludeAlliances    []string     `json:"includeAlliance"`
+	ExcludedShips       []string     `json:"excludedShips"`
+	PendingBulk         []zkill.Kill `json:"-"`
 }
