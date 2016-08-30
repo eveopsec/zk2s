@@ -1,42 +1,59 @@
 package config
 
 import (
-	"bufio"
-	"html/template"
-	"os"
+	"sync"
 
+	"github.com/urfave/cli"
 	"github.com/vivace-io/gonfig"
 )
 
-var t = template.Must(template.ParseGlob("response.tmpl"))
-var input = bufio.NewReader(os.Stdin)
+var (
+	CONFIG *Configuration
+)
 
-// LoadConfig reads the configuration file and returns it,
-// marshalled in to Config
-func LoadConfig() (*Configuration, error) {
-	cfg := &Configuration{}
-	err := gonfig.Load(cfg)
-	return cfg, err
+func Init(c *cli.Context) error {
+	return nil
 }
 
-// Configuration defines zk2s' configuration
+// Configuration contains returns the Application configuration in its current state,
+// and protects it to be safe for use in goroutines.
 type Configuration struct {
-	UserAgent string    `json:"userAgent"`
-	BotToken  string    `json:"botToken"`
-	Channels  []Channel `json:"channels"`
+	*sync.RWMutex
+	app *Application
+}
+
+func (this *Configuration) Get() (app Application, err error) {
+	if app == nil {
+		this.Lock()
+		defer this.Unlock()
+		return *this.app, gonfig.Load(this.app)
+	}
+	this.RLock()
+	defer this.RUnlock()
+	return *this.app, nil
+}
+
+type Application struct {
+	UserAgent string `json:"userAgent"`
+	Teams     []Team `json:"teams"`
 }
 
 // File returns the file name/path for gonfig interface
-func (c *Configuration) File() string {
+func (this *Application) File() string {
 	return "cfg.zk2s.json"
 }
 
 // Save the configuration file
-func (c *Configuration) Save() error {
+func (this *Application) Save() error {
 	return gonfig.Save(c)
 }
 
-// Channel defines the configuration for a slack channel, including its filters
+type Team struct {
+	BotToken string    `json:"botToken"`
+	Channels []Channel `json:"channels"`
+}
+
+// Channel defines the configuration for a slack channel in a team, including its filters
 type Channel struct {
 	Name                string   `json:"channelName"`
 	MinimumValue        int      `json:"minimumValue"`
