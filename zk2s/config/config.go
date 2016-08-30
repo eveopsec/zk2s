@@ -3,6 +3,7 @@ package config
 import (
 	"sync"
 
+	"github.com/nlopes/slack"
 	"github.com/urfave/cli"
 	"github.com/vivace-io/gonfig"
 )
@@ -12,7 +13,10 @@ var (
 )
 
 func Init(c *cli.Context) error {
-	return nil
+	CONFIG = &Configuration{
+		app: new(Application),
+	}
+	return gonfig.Load(CONFIG.app)
 }
 
 // Configuration contains returns the Application configuration in its current state,
@@ -34,8 +38,10 @@ func (this *Configuration) Get() (app Application, err error) {
 }
 
 type Application struct {
-	UserAgent string `json:"userAgent"`
-	Teams     []Team `json:"teams"`
+	UserAgent  string        `json:"userAgent"`
+	Teams      []Team        `json:"teams"`
+	Bot        *slack.Client `json:"-"`
+	FailedAuth bool          `json:"-"`
 }
 
 // File returns the file name/path for gonfig interface
