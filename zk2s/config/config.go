@@ -23,7 +23,7 @@ type Configuration struct {
 }
 
 func (this *Configuration) Get() (app Application, err error) {
-	if app == nil {
+	if this.app == nil {
 		this.Lock()
 		defer this.Unlock()
 		return *this.app, gonfig.Load(this.app)
@@ -45,7 +45,7 @@ func (this *Application) File() string {
 
 // Save the configuration file
 func (this *Application) Save() error {
-	return gonfig.Save(c)
+	return gonfig.Save(this)
 }
 
 type Team struct {
