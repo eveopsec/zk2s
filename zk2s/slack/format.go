@@ -7,8 +7,8 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/eveopsec/zk2s/zk2s/config"
+	"github.com/eveopsec/zk2s/zk2s/filter"
 	"github.com/eveopsec/zk2s/zk2s/tmpl"
-	"github.com/eveopsec/zk2s/zk2s/util"
 	slacklib "github.com/nlopes/slack"
 	"github.com/vivace-io/evelib/crest"
 	"github.com/vivace-io/evelib/zkill"
@@ -44,7 +44,7 @@ func format(kill zkill.Kill, channel config.Channel) (messageParams slacklib.Pos
 	d := new(data)
 	d.Killmail = *kill.Killmail
 	d.TotalValue = humanize.Comma(int64(kill.Zkb.TotalValue))
-	d.IsLoss = util.IsLoss(kill, channel)
+	d.IsLoss = filter.IsLoss(kill, channel)
 	//Solo kill testing
 	if len(kill.Killmail.Attackers) == 1 {
 		d.IsSolo = true
@@ -155,7 +155,7 @@ func format(kill zkill.Kill, channel config.Channel) (messageParams slacklib.Pos
 	attch.ThumbURL = "http://image.eveonline.com/render/" + strconv.Itoa(kill.Killmail.Victim.ShipType.ID) + "_64.png"
 	attch.Text = body.String()
 	//Color Coding
-	if util.IsLoss(kill, channel) {
+	if filter.IsLoss(kill, channel) {
 		attch.Color = "danger"
 	} else {
 		attch.Color = "good"

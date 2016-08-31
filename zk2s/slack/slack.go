@@ -14,35 +14,43 @@ import (
 
 var (
 	clear chan bool
-	app   config.Application
+	app   *config.Application
 )
 
 func Init(c *cli.Context) error {
-	var err error
-	app, err = config.CONFIG.Get()
+	cfg, err := config.CONFIG.Get()
+	app = &cfg
 	if err != nil {
 		return err
 	}
 	manage()
+	for _, t := range app.Teams {
+		t.Bot = slacklib.New(t.BotToken)
+		_, err := t.Bot.AuthTest()
+		if err != nil {
+			log.Printf("[WARNING] - token %v is invalid and will not be posted to!", t.BotToken)
+		}
+	}
 	return nil
 }
 
 // Recieve kills from RedisQ on here.
 func Recieve(kill zkill.Kill) {
+	// TODO - Handle bulk!
 	for _, t := range app.Teams {
 		for _, c := range t.Channels {
 			if filter.Within(kill, *c) {
 				params := format(kill, *c)
 				if !t.FailedAuth {
 					log.Printf("Posting kill %v in channel %v", kill.KillID, c.Name)
-					post(t, *c, params)
+					post(t, c, params)
 				}
 			}
 		}
 	}
 }
 
-func post(team config.Team, channel config.Channel, messageParams slacklib.PostMessageParameters) {
+func post(team *config.Team, channel *config.Channel, messageParams slacklib.PostMessageParameters) {
 	if team.FailedAuth {
 		return
 	}

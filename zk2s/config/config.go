@@ -23,7 +23,7 @@ func Init(c *cli.Context) error {
 // Configuration contains returns the Application configuration in its current state,
 // and protects it to be safe for use in goroutines.
 type Configuration struct {
-	*sync.RWMutex
+	sync.RWMutex
 	app *Application
 }
 
@@ -39,8 +39,8 @@ func (this *Configuration) Get() (app Application, err error) {
 }
 
 type Application struct {
-	UserAgent string `json:"userAgent"`
-	Teams     []Team `json:"teams"`
+	UserAgent string  `json:"userAgent"`
+	Teams     []*Team `json:"teams"`
 }
 
 // File returns the file name/path for gonfig interface

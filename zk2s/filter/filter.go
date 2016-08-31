@@ -108,7 +108,7 @@ func involvedOK(kill zkill.Kill, channel config.Channel) bool {
 }
 
 // returns true if passed character is in channel.IncludeCharacters, false otherwise
-func characterOK(char *crest.Character, channel config.Channel) bool {
+func characterOK(char crest.Character, channel config.Channel) bool {
 	for c := range channel.IncludeCharacters {
 		if (char.Name == channel.IncludeCharacters[c]) || (string(char.ID) == channel.IncludeCharacters[c]) {
 			return true
@@ -118,7 +118,7 @@ func characterOK(char *crest.Character, channel config.Channel) bool {
 }
 
 // returns true if passed corporation is in channel.IncludeCorporations, false otherwise
-func corporationOK(corp *crest.Corporation, channel config.Channel) bool {
+func corporationOK(corp crest.Corporation, channel config.Channel) bool {
 	for c := range channel.IncludeCorporations {
 		if corp.Name == channel.IncludeCorporations[c] {
 			return true
@@ -128,7 +128,7 @@ func corporationOK(corp *crest.Corporation, channel config.Channel) bool {
 }
 
 // returns true if passed alliance is in channel.IncludeAlliances, false otherwise
-func allianceOK(alli *crest.Alliance, channel config.Channel) bool {
+func allianceOK(alli crest.Alliance, channel config.Channel) bool {
 	for a := range channel.IncludeAlliances {
 		if alli.Name == channel.IncludeAlliances[a] {
 			return true
