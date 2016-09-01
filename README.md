@@ -15,15 +15,9 @@ Previously hosted at vivace-io/zk2s, this project has been moved to this organiz
 First major release!
 
  - [x] **Multiple Slack Team support**
- - [ ] Configuration Changes
-  - [ ] Options to post kills in bulk rather than individually.
- - [ ] Template Changes
-  - [x] Templates `killtitle` and `killbody` renamed to `kill-title` and `kill-body`
-  - [ ] New templates `bulk-title` and `bulk-body` introduced.
- - [ ] Lots and lots of code changes and packages created/deleted/consolidated.
-  - [ ] Automated testing
-  - [ ] Testing flag to run a test slack post
- - [ ] Setup Assistant improved
+ - [x] Configuration changes to accommodate the above.
+ - [x] Templates `killtitle` and `killbody` renamed to `kill-title` and `kill-body`
+ - [x] Lots and lots of code changes and packages created/deleted/consolidated.
 
 ## Note
 

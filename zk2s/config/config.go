@@ -5,7 +5,6 @@ import (
 
 	"github.com/nlopes/slack"
 	"github.com/urfave/cli"
-	"github.com/vivace-io/evelib/zkill"
 	"github.com/vivace-io/gonfig"
 )
 
@@ -62,14 +61,11 @@ type Team struct {
 
 // Channel defines the configuration for a slack channel in a team, including its filters
 type Channel struct {
-	Name                string       `json:"channelName"`
-	InBulk              bool         `json:"inBulk"`
-	BulkPostInterval    int          `json:"bulkPostInterval"`
-	MinimumValue        int          `json:"minimumValue"`
-	MaximumValue        int          `json:"maximumValue"`
-	IncludeCharacters   []string     `json:"includeCharacters"`
-	IncludeCorporations []string     `json:"includeCorporations"`
-	IncludeAlliances    []string     `json:"includeAlliance"`
-	ExcludedShips       []string     `json:"excludedShips"`
-	PendingBulk         []zkill.Kill `json:"-"`
+	Name                string   `json:"channelName"`
+	MinimumValue        int      `json:"minimumValue"`
+	MaximumValue        int      `json:"maximumValue"`
+	IncludeCharacters   []string `json:"includeCharacters"`
+	IncludeCorporations []string `json:"includeCorporations"`
+	IncludeAlliances    []string `json:"includeAlliances"`
+	ExcludedShips       []string `json:"excludedShips"`
 }
