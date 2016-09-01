@@ -8,17 +8,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-const VERSION = "0.5"
-
-var CONTRIBUTORS = []cli.Author{
-	cli.Author{
-		Name: "Nathan \"Vivace Naaris\" Morley",
-	},
-	cli.Author{
-		Name: "\"Zuke\"",
-	},
-}
-
 func main() {
 	app := cli.NewApp()
 	app.Authors = zk2s.CONTRIBUTORS
