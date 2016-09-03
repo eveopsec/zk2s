@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/eveopsec/zk2s/zk2s/config"
+	"github.com/eveopsec/zk2s/zk2s/filter"
 	slacklib "github.com/nlopes/slack"
 	"github.com/urfave/cli"
 	"github.com/vivace-io/evelib/zkill"
@@ -41,17 +42,12 @@ func Recieve(kill zkill.Kill) {
 	// TODO - Handle bulk!
 	for _, t := range app.Teams {
 		for _, c := range t.Channels {
-			/*if filter.Within(kill, *c) {
-				params := format(kill, *c)
+			if filter.Within(kill, c) {
+				params := format(kill, c)
 				if !t.FailedAuth {
 					log.Printf("Posting kill %v in channel %v", kill.KillID, c.Name)
 					post(t, c, params)
 				}
-			}*/
-			params := format(kill, c)
-			if !t.FailedAuth {
-				log.Printf("Posting kill %v in channel %v", kill.KillID, c.Name)
-				post(t, c, params)
 			}
 		}
 	}
