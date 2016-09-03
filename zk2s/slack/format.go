@@ -161,5 +161,6 @@ func format(kill zkill.Kill, channel config.Channel) (messageParams slacklib.Pos
 		attch.Color = "good"
 	}
 	messageParams.Attachments = []slacklib.Attachment{attch}
+	messageParams.AsUser = true
 	return
 }
