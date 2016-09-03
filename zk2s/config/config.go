@@ -1,48 +1,51 @@
 package config
 
 import (
-	"bufio"
-	"html/template"
-	"os"
-
+	"github.com/nlopes/slack"
+	"github.com/urfave/cli"
 	"github.com/vivace-io/gonfig"
 )
 
-var t = template.Must(template.ParseGlob("response.tmpl"))
-var input = bufio.NewReader(os.Stdin)
+var (
+	CONFIG *Application
+)
 
-// LoadConfig reads the configuration file and returns it,
-// marshalled in to Config
-func LoadConfig() (*Configuration, error) {
-	cfg := &Configuration{}
-	err := gonfig.Load(cfg)
-	return cfg, err
+func Init(c *cli.Context) error {
+	CONFIG = new(Application)
+	return gonfig.Load(CONFIG)
 }
 
-// Configuration defines zk2s' configuration
-type Configuration struct {
-	UserAgent string    `json:"userAgent"`
-	BotToken  string    `json:"botToken"`
-	Channels  []Channel `json:"channels"`
+// Application holds the configuration for zk2s
+type Application struct {
+	UserAgent string  `json:"userAgent"`
+	Teams     []*Team `json:"teams"`
 }
 
 // File returns the file name/path for gonfig interface
-func (c *Configuration) File() string {
+func (this *Application) File() string {
 	return "cfg.zk2s.json"
 }
 
 // Save the configuration file
-func (c *Configuration) Save() error {
-	return gonfig.Save(c)
+func (this *Application) Save() error {
+	return gonfig.Save(this)
 }
 
-// Channel defines the configuration for a slack channel, including its filters
+// Team is the configuration object for a slack team.
+type Team struct {
+	BotToken   string        `json:"botToken"`
+	Channels   []Channel     `json:"channels"`
+	Bot        *slack.Client `json:"-"`
+	FailedAuth bool          `json:"-"`
+}
+
+// Channel defines the configuration for a slack channel in a team, including its filters
 type Channel struct {
 	Name                string   `json:"channelName"`
 	MinimumValue        int      `json:"minimumValue"`
 	MaximumValue        int      `json:"maximumValue"`
 	IncludeCharacters   []string `json:"includeCharacters"`
 	IncludeCorporations []string `json:"includeCorporations"`
-	IncludeAlliances    []string `json:"includeAlliance"`
+	IncludeAlliances    []string `json:"includeAlliances"`
 	ExcludedShips       []string `json:"excludedShips"`
 }

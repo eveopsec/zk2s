@@ -1,4 +1,6 @@
-package util
+// Package filter defines functions that check if a kill is within a given channel's
+// configured filters.
+package filter
 
 import (
 	"github.com/eveopsec/zk2s/zk2s/config"
@@ -6,12 +8,8 @@ import (
 	"github.com/vivace-io/evelib/zkill"
 )
 
-/* util/filter.go
- * Defines functions for filtering through kills.
- */
-
-// WithinFilter returns true if the kill is within the channel's filter, false otherwise
-func WithinFilter(kill *zkill.Kill, channel config.Channel) bool {
+// Within returns true if the kill is within the channel's filter, false otherwise
+func Within(kill zkill.Kill, channel config.Channel) bool {
 	// KillID of 0 should be skipped as it means no kill was returned from RedisQ
 	if kill.KillID == 0 {
 		return false
@@ -29,7 +27,7 @@ func WithinFilter(kill *zkill.Kill, channel config.Channel) bool {
 }
 
 // IsLoss returns true if the kill is a loss, false otherwise
-func IsLoss(kill *zkill.Kill, channel config.Channel) bool {
+func IsLoss(kill zkill.Kill, channel config.Channel) bool {
 	if characterOK(kill.Killmail.Victim.Character, channel) {
 		return true
 	}
@@ -43,7 +41,7 @@ func IsLoss(kill *zkill.Kill, channel config.Channel) bool {
 }
 
 // IsAwox returns true if the kill was an Awox, partial or otherwise. False if not.
-func IsAwox(kill *zkill.Kill, channel config.Channel) bool {
+func IsAwox(kill zkill.Kill, channel config.Channel) bool {
 	if IsLoss(kill, channel) {
 		for a := range kill.Killmail.Attackers {
 			if characterOK(kill.Killmail.Attackers[a].Character, channel) {
@@ -60,7 +58,7 @@ func IsAwox(kill *zkill.Kill, channel config.Channel) bool {
 	return false
 }
 
-func valueOK(kill *zkill.Kill, channel config.Channel) bool {
+func valueOK(kill zkill.Kill, channel config.Channel) bool {
 	// If kill value is within [MinimumValue, MaximumValue] return true
 	if kill.Zkb.TotalValue >= float32(channel.MinimumValue) && kill.Zkb.TotalValue <= float32(channel.MaximumValue) {
 		return true
@@ -73,7 +71,7 @@ func valueOK(kill *zkill.Kill, channel config.Channel) bool {
 }
 
 // returns true if ship is NOT excluded by name, false otherwise
-func shipOK(kill *zkill.Kill, channel config.Channel) bool {
+func shipOK(kill zkill.Kill, channel config.Channel) bool {
 	for ship := range channel.ExcludedShips {
 		if kill.Killmail.Victim.ShipType.Name == channel.ExcludedShips[ship] {
 			return false
@@ -85,7 +83,7 @@ func shipOK(kill *zkill.Kill, channel config.Channel) bool {
 	return true
 }
 
-func involvedOK(kill *zkill.Kill, channel config.Channel) bool {
+func involvedOK(kill zkill.Kill, channel config.Channel) bool {
 	if characterOK(kill.Killmail.Victim.Character, channel) {
 		return true
 	}

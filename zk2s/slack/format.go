@@ -1,41 +1,20 @@
-package zk2s
+package slack
 
 import (
 	"bytes"
 	"log"
 	"strconv"
-	"text/template"
-	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/vivace-io/evelib/crest"
-
 	"github.com/eveopsec/zk2s/zk2s/config"
-	"github.com/eveopsec/zk2s/zk2s/util"
-	"github.com/nlopes/slack"
+	"github.com/eveopsec/zk2s/zk2s/filter"
+	"github.com/eveopsec/zk2s/zk2s/tmpl"
+	slacklib "github.com/nlopes/slack"
+	"github.com/vivace-io/evelib/crest"
 	"github.com/vivace-io/evelib/zkill"
 )
 
-/* slack.go
- * Defines functions for formatting/posting kills to Slack
- */
-
-var t = template.Must(template.ParseGlob("response.tmpl"))
-
-// TemplateFromPath tries to load the template from the path provided.
-// By default, the application assumes that the template is in the same
-// directory as the executable.
-func TemplateFromPath(path string) error {
-	var err error
-	t, err = template.ParseGlob(path)
-	if err != nil {
-		return err
-	}
-	t = template.Must(t, err)
-	return err
-}
-
-// data is passed to templates for defining how a slack post appears.
+// data is passed to templates for defining how a slacklib post appears.
 type data struct {
 	Killmail       crest.Killmail
 	TotalValue     string
@@ -54,31 +33,18 @@ type data struct {
 	TotalAlli      []string
 }
 
-// PostKill applys the filter(s) to the kill, and posts the kill to slack
-// only if the kill is within the configured filters.
-func PostKill(kill *zkill.Kill) {
-	// For each filter defined in configuration,
-	for c := range cfg.Channels {
-		if util.WithinFilter(kill, cfg.Channels[c]) {
-			params := format(kill, cfg.Channels[c])
-			log.Printf("Posting kill %v to channel %v", kill.KillID, cfg.Channels[c].Name)
-			post(cfg.Channels[c].Name, params)
-		}
-	}
-}
-
 // format loads the formatting template and applies formatting
 // rules from the Configuration object.
-func format(kill *zkill.Kill, channel config.Channel) (messageParams slack.PostMessageParameters) {
+func format(kill zkill.Kill, channel config.Channel) (messageParams slacklib.PostMessageParameters) {
 	title := new(bytes.Buffer)
 	body := new(bytes.Buffer)
 	var err error
 
 	// define post data for templates
 	d := new(data)
-	d.Killmail = kill.Killmail
+	d.Killmail = *kill.Killmail
 	d.TotalValue = humanize.Comma(int64(kill.Zkb.TotalValue))
-	d.IsLoss = util.IsLoss(kill, channel)
+	d.IsLoss = filter.IsLoss(kill, channel)
 	//Solo kill testing
 	if len(kill.Killmail.Attackers) == 1 {
 		d.IsSolo = true
@@ -173,35 +139,28 @@ func format(kill *zkill.Kill, channel config.Channel) (messageParams slack.PostM
 	}
 
 	// Execute templates
-	err = t.ExecuteTemplate(title, "killtitle", d)
+	err = tmpl.T.ExecuteTemplate(title, "kill-title", d)
 	if err != nil {
 		log.Println(err)
 	}
-	err = t.ExecuteTemplate(body, "killbody", d)
+	err = tmpl.T.ExecuteTemplate(body, "kill-body", d)
 	if err != nil {
 		log.Println(err)
 	}
 
-	attch := slack.Attachment{}
+	attch := slacklib.Attachment{}
 	attch.MarkdownIn = []string{"pretext", "text"}
 	attch.Title = title.String()
 	attch.TitleLink = "https://zkillboard.com/kill/" + strconv.Itoa(kill.KillID) + "/"
 	attch.ThumbURL = "http://image.eveonline.com/render/" + strconv.Itoa(kill.Killmail.Victim.ShipType.ID) + "_64.png"
 	attch.Text = body.String()
 	//Color Coding
-	if util.IsLoss(kill, channel) {
+	if filter.IsLoss(kill, channel) {
 		attch.Color = "danger"
 	} else {
 		attch.Color = "good"
 	}
-	messageParams.Attachments = []slack.Attachment{attch}
-	return
-}
-
-// post finally sends the kill to slack
-func post(channel string, messageParams slack.PostMessageParameters) {
+	messageParams.Attachments = []slacklib.Attachment{attch}
 	messageParams.AsUser = true
-	bot.PostMessage(channel, "", messageParams)
-	// Throttle posting rates to Slack.
-	time.Sleep(1 * time.Second)
+	return
 }

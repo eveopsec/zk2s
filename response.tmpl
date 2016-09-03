@@ -1,4 +1,4 @@
-{{define "killtitle"}}
+{{define "kill-title"}}
   {{if .IsSolo}}
     {{if .IsLoss}}
       {{.Killmail.Victim.Character.Name}} can't do solo PvP and lost their {{.Killmail.Victim.ShipType.Name}}...
@@ -14,7 +14,7 @@
   {{end}}
 {{end}}
 
-{{define "killbody"}}
+{{define "kill-body"}}
 *Total Value:* {{.TotalValue}} ISK
 {{if .IsSolo}}
 *Pilots Involved ({{len .Killmail.Attackers}}):* {{range $attacker := index .FinalBlowPilot}}{{$attacker}}{{end}}^

@@ -1,77 +1,65 @@
 package zk2s
 
 import (
+	"errors"
 	"log"
 
 	"github.com/eveopsec/zk2s/zk2s/config"
-	"github.com/nlopes/slack"
+	"github.com/eveopsec/zk2s/zk2s/slack"
+
+	"github.com/eveopsec/zk2s/zk2s/tmpl"
 	"github.com/urfave/cli"
 	"github.com/vivace-io/evelib/zkill"
-	"github.com/vivace-io/gonfig"
 )
 
-var cfg *config.Configuration
-var bot *slack.Client
+var CMD_Start = cli.Command{
+	Name:   "start",
+	Usage:  "start the zk2s application",
+	Action: start,
+	Flags:  []cli.Flag{flag_Template},
+}
 
-// Run zk2s
-func Run(c *cli.Context) error {
+var flag_Template = cli.StringFlag{
+	Name:  "template, t",
+	Usage: "set the path to the template file (defaults to response.tmpl in working directory)",
+	Value: "response.tmpl",
+}
+
+func start(c *cli.Context) error {
 	log.Printf("%v version %v", c.App.Name, c.App.Version)
-	var err error
 
-	// 1 - Load Configuration file
-	cfg = new(config.Configuration)
-	err = gonfig.Load(cfg)
-	if err != nil {
-		log.Fatalf("Unable to read config with error %v", err)
-		return err
-	}
-	// 2 - Setup a new Slack Bot
-	bot = slack.New(cfg.BotToken)
-	authResp, err := bot.AuthTest()
-	if err != nil {
-		log.Fatalf("Unable to authenticate with Slack - %v", err)
-		return err
-	}
-	log.Printf("Connected to Slack Team %v as user %v", authResp.Team, authResp.User)
-
-	// 3 - Load templates from Flag
-	err = TemplateFromPath(c.String("template"))
-	if err != nil {
-		log.Fatalf("Unable to load template file with error: %v", err)
+	// [1] - Init config
+	if err := config.Init(c); err != nil {
+		log.Printf("[FATAL] Unable to load configuration: %v", err)
 		return err
 	}
 
-	// 4 - Watch for new kills and log errors
-	errc := make(chan error, 5)
-	killc := make(chan zkill.Kill, 10)
-	zClient := zkill.NewRedisQ()
-	zClient.UserAgent = cfg.UserAgent
-	zClient.FetchKillmails(killc, errc)
-	handleKills(killc)
-	handleErrors(errc)
+	// [2] - Init tmpl
+	if err := tmpl.Init(c); err != nil {
+		log.Printf("[FATAL] Unable to load templates: %v", err)
+		return err
+	}
+
+	// [3] - Init slack
+	if err := slack.Init(c); err != nil {
+		log.Printf("[FATAL] Unable create slack connections: %v", err)
+		return err
+	}
+
+	// [4] - Listen to redisq
+	if err := listen(); err != nil {
+		log.Printf("[FATAL] Unable to listen on RedisQ: %v", err)
+		return err
+	}
+
 	select {}
 }
 
-// handleKills sends the kill to be filtered/processed before posting to slack.
-func handleKills(killChan chan zkill.Kill) {
-	go func() {
-		for {
-			select {
-			case kill := <-killChan:
-				PostKill(&kill)
-			}
-		}
-	}()
-}
-
-// handleErrors logs errors returned in Zkillboard queries
-func handleErrors(errChan chan error) {
-	go func() {
-		for {
-			select {
-			case err := <-errChan:
-				log.Printf("ERROR - %v", err.Error())
-			}
-		}
-	}()
+func listen() error {
+	if config.CONFIG == nil {
+		return errors.New("app configuration was nil")
+	}
+	client := zkill.NewRedisQClient(config.CONFIG.UserAgent)
+	client.AddReciever(slack.Recieve)
+	return client.Start()
 }

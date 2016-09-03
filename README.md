@@ -1,24 +1,25 @@
 # zk2s
 
-[![Build Status](http://build.vivace.io/api/badges/vivace-io/zk2s/status.svg)](http://build.vivace.io/vivace-io/zk2s)
-
 Application to post kills/losses from zKillboard to Slack in near real time by using zKillboard's RedisQ endpoint.
 
 This application is independent of the OpSec Project and can be run without requiring other services
 
 Previously hosted at vivace-io/zk2s, this project has been moved to this organization to group it with other Eve Online tools and applications.
 
-## Version 0.5
+## Version 1.0
 
 **Changes:**
- - Code refactoring/cleanup
- - Changes to CLI for configuration setup
- - Moved primary functionality to a sub package, so that the application can be used standalone or incorporated in to other applications.
- - Added flag to allow for template file path to be set (defaults to working/executable directory if not specified)
+
+**This release will break old configurations!**
+
+First major release!
+
+ - [x] **Multiple Slack Team support**
+ - [x] Configuration changes to accommodate the above.
+ - [x] Templates `killtitle` and `killbody` renamed to `kill-title` and `kill-body`
+ - [x] Lots and lots of code changes and packages created/deleted/consolidated.
 
 ## Note
-
-This is still a very rough implementation, so the post templating features are not as full as I might like, and some of the filters may or may not work. Please report any issues you may have.
 
 Feedback and contributions are always welcome. Please create a new issue or pull request on this repository for either, or contact "Vivace Naaris" in game to talk to me!
 
