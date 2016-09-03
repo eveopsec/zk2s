@@ -15,6 +15,7 @@ func Init(c *cli.Context) error {
 	return gonfig.Load(CONFIG)
 }
 
+// Application holds the configuration for zk2s
 type Application struct {
 	UserAgent string  `json:"userAgent"`
 	Teams     []*Team `json:"teams"`
@@ -30,6 +31,7 @@ func (this *Application) Save() error {
 	return gonfig.Save(this)
 }
 
+// Team is the configuration object for a slack team.
 type Team struct {
 	BotToken   string        `json:"botToken"`
 	Channels   []Channel     `json:"channels"`
