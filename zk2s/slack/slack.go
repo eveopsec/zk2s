@@ -13,9 +13,8 @@ import (
 )
 
 var (
-	clear   chan bool
-	app     *config.Application
-	clients map[string]*slacklib.Client
+	clear chan bool
+	app   *config.Application
 )
 
 func Init(c *cli.Context) error {
