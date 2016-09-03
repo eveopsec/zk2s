@@ -1,6 +1,7 @@
 package zk2s
 
 import (
+	"errors"
 	"log"
 
 	"github.com/eveopsec/zk2s/zk2s/config"
@@ -55,11 +56,10 @@ func start(c *cli.Context) error {
 }
 
 func listen() error {
-	cfg, err := config.CONFIG.Get()
-	if err != nil {
-		return err
+	if config.CONFIG == nil {
+		return errors.New("app configuration was nil")
 	}
-	client := zkill.NewRedisQClient(cfg.UserAgent)
+	client := zkill.NewRedisQClient(config.CONFIG.UserAgent)
 	client.AddReciever(slack.Recieve)
 	return client.Start()
 }
