@@ -42,7 +42,7 @@ func format(kill zkill.Kill, channel config.Channel) (messageParams slacklib.Pos
 
 	// define post data for templates
 	d := new(data)
-	d.Killmail = *kill.Killmail
+	d.Killmail = kill.Killmail
 	d.TotalValue = humanize.Comma(int64(kill.Zkb.TotalValue))
 	d.IsLoss = filter.IsLoss(kill, channel)
 	//Solo kill testing
