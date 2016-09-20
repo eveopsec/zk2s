@@ -1,13 +1,11 @@
-FROM golang:alpine
+FROM golang:1.7-alpine
 
 RUN apk add --no-cache git
 
-ADD . /go/src/github.com/eveopsec/zk2s
+RUN go get github.com/eveopsec/zk2s
 
-WORKDIR /go/src/github.com/eveopsec/zk2s
+RUN mkdir /zk2s
 
-RUN go get
+WORKDIR /zk2s
 
-RUN go build
-
-ENTRYPOINT /go/src/github.com/eveopsec/zk2s/zk2s start
+ENTRYPOINT /go/bin/zk2s start
