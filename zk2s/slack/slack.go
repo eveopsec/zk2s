@@ -10,7 +10,7 @@ import (
 	"github.com/eveopsec/zk2s/zk2s/filter"
 	slacklib "github.com/nlopes/slack"
 	"github.com/urfave/cli"
-	"github.com/vivace-io/evelib/zkill"
+	"github.com/vivace-io/evelib/redisq"
 )
 
 var (
@@ -38,14 +38,14 @@ func Init(c *cli.Context) error {
 }
 
 // Recieve kills from RedisQ on here.
-func Recieve(kill zkill.Kill) {
+func Recieve(payload redisq.Payload) {
 	// TODO - Handle bulk!
 	for _, t := range app.Teams {
 		for _, c := range t.Channels {
-			if filter.Within(kill, c) {
-				params := format(kill, c)
+			if filter.Within(payload, c) {
+				params := format(payload, c)
 				if !t.FailedAuth {
-					log.Printf("Posting kill %v in channel %v", kill.KillID, c.Name)
+					log.Printf("Posting kill %v in channel %v", payload.KillID, c.Name)
 					post(t, c, params)
 				}
 			}

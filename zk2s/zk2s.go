@@ -9,7 +9,7 @@ import (
 
 	"github.com/eveopsec/zk2s/zk2s/tmpl"
 	"github.com/urfave/cli"
-	"github.com/vivace-io/evelib/zkill"
+	"github.com/vivace-io/evelib/redisq"
 )
 
 var CMD_Start = cli.Command{
@@ -59,7 +59,11 @@ func listen() error {
 	if config.CONFIG == nil {
 		return errors.New("app configuration was nil")
 	}
-	client := zkill.NewRedisQClient(config.CONFIG.UserAgent)
-	client.AddReciever(slack.Recieve)
-	return client.Start()
+	client, err := redisq.NewClient(nil)
+	if err != nil {
+		return err
+	}
+	client.AddFunc(slack.Recieve)
+	client.Listen()
+	return nil
 }
