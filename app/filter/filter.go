@@ -3,7 +3,7 @@
 package filter
 
 import (
-	"github.com/eveopsec/zk2s/zk2s/config"
+	"github.com/eveopsec/zk2s/app/config"
 	"github.com/vivace-io/evelib/crest"
 	"github.com/vivace-io/evelib/redisq"
 )
@@ -70,7 +70,10 @@ func valueOK(payload redisq.Payload, channel config.Channel) bool {
 	return false
 }
 
+<<<<<<< HEAD:app/filter/filter.go
+=======
 // returns true if ship is NOT excluded by name, false otherwise
+>>>>>>> d67acc65ff6d47ca5371df33146c36b03ef0f75e:zk2s/filter/filter.go
 func shipOK(payload redisq.Payload, channel config.Channel) bool {
 	for ship := range channel.ExcludedShips {
 		if payload.Killmail.Victim.ShipType.Name == channel.ExcludedShips[ship] {

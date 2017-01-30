@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/dustin/go-humanize"
-	"github.com/eveopsec/zk2s/zk2s/config"
-	"github.com/eveopsec/zk2s/zk2s/filter"
-	"github.com/eveopsec/zk2s/zk2s/tmpl"
+	"github.com/eveopsec/zk2s/app/config"
+	"github.com/eveopsec/zk2s/app/filter"
+	"github.com/eveopsec/zk2s/app/tmpl"
 	slacklib "github.com/nlopes/slack"
 	"github.com/vivace-io/evelib/crest"
 	"github.com/vivace-io/evelib/redisq"

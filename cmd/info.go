@@ -1,4 +1,4 @@
-package zk2s
+package cmd
 
 import "github.com/urfave/cli"
 
@@ -8,7 +8,7 @@ import "github.com/urfave/cli"
 
 var (
 	// VERSION of zk2s
-	VERSION = "1.0"
+	VERSION = "2.0"
 
 	// USAGE text for zk2s application/library
 	USAGE = "A Slack bot for posting kills from zKillboard to slack in near-real time."
