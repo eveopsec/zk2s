@@ -70,10 +70,6 @@ func valueOK(payload redisq.Payload, channel config.Channel) bool {
 	return false
 }
 
-<<<<<<< HEAD:app/filter/filter.go
-=======
-// returns true if ship is NOT excluded by name, false otherwise
->>>>>>> d67acc65ff6d47ca5371df33146c36b03ef0f75e:zk2s/filter/filter.go
 func shipOK(payload redisq.Payload, channel config.Channel) bool {
 	for ship := range channel.ExcludedShips {
 		if payload.Killmail.Victim.ShipType.Name == channel.ExcludedShips[ship] {
@@ -110,7 +106,6 @@ func involvedOK(payload redisq.Payload, channel config.Channel) bool {
 	return false
 }
 
-// returns true if passed character is in channel.IncludeCharacters, false otherwise
 func characterOK(char crest.Character, channel config.Channel) bool {
 	for c := range channel.IncludeCharacters {
 		if (char.Name == channel.IncludeCharacters[c]) || (string(char.ID) == channel.IncludeCharacters[c]) {
@@ -120,7 +115,6 @@ func characterOK(char crest.Character, channel config.Channel) bool {
 	return false
 }
 
-// returns true if passed corporation is in channel.IncludeCorporations, false otherwise
 func corporationOK(corp crest.Corporation, channel config.Channel) bool {
 	for c := range channel.IncludeCorporations {
 		if corp.Name == channel.IncludeCorporations[c] {
@@ -130,7 +124,6 @@ func corporationOK(corp crest.Corporation, channel config.Channel) bool {
 	return false
 }
 
-// returns true if passed alliance is in channel.IncludeAlliances, false otherwise
 func allianceOK(alli crest.Alliance, channel config.Channel) bool {
 	for a := range channel.IncludeAlliances {
 		if alli.Name == channel.IncludeAlliances[a] {
