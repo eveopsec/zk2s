@@ -106,7 +106,6 @@ func involvedOK(payload redisq.Payload, channel config.Channel) bool {
 	return false
 }
 
-// returns true if passed character is in channel.IncludeCharacters, false otherwise
 func characterOK(char crest.Character, channel config.Channel) bool {
 	for c := range channel.IncludeCharacters {
 		if (char.Name == channel.IncludeCharacters[c]) || (string(char.ID) == channel.IncludeCharacters[c]) {
@@ -116,7 +115,6 @@ func characterOK(char crest.Character, channel config.Channel) bool {
 	return false
 }
 
-// returns true if passed corporation is in channel.IncludeCorporations, false otherwise
 func corporationOK(corp crest.Corporation, channel config.Channel) bool {
 	for c := range channel.IncludeCorporations {
 		if corp.Name == channel.IncludeCorporations[c] {
@@ -126,7 +124,6 @@ func corporationOK(corp crest.Corporation, channel config.Channel) bool {
 	return false
 }
 
-// returns true if passed alliance is in channel.IncludeAlliances, false otherwise
 func allianceOK(alli crest.Alliance, channel config.Channel) bool {
 	for a := range channel.IncludeAlliances {
 		if alli.Name == channel.IncludeAlliances[a] {
