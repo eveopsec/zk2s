@@ -2,33 +2,34 @@ package config
 
 import (
 	"github.com/nlopes/slack"
-	"github.com/urfave/cli"
 	"github.com/vivace-io/gonfig"
 )
 
-var (
-	CONFIG *Application
-)
-
-func Init(c *cli.Context) error {
-	CONFIG = new(Application)
-	return gonfig.Load(CONFIG)
+func ReadConfig(filepath string) (cfg *Configuration, err error) {
+	cfg = new(Configuration)
+	cfg.filepath = filepath
+	if err := gonfig.Load(cfg); err != nil {
+		return nil, err
+	}
+	return
 }
 
-// Application holds the configuration for zk2s
-type Application struct {
-	UserAgent string  `json:"userAgent"`
-	Teams     []*Team `json:"teams"`
+// Configuration holds the configuration for zk2s
+type Configuration struct {
+	filepath     string  `json:"-"`
+	TemplateFile string  `json:"template_file"`
+	UserAgent    string  `json:"userAgent"`
+	Teams        []*Team `json:"teams"`
 }
 
 // File returns the file name/path for gonfig interface
-func (this *Application) File() string {
-	return "cfg.zk2s.json"
+func (cfg *Configuration) File() string {
+	return cfg.filepath
 }
 
 // Save the configuration file
-func (this *Application) Save() error {
-	return gonfig.Save(this)
+func (cfg *Configuration) Save() error {
+	return gonfig.Save(cfg)
 }
 
 // Team is the configuration object for a slack team.

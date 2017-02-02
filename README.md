@@ -6,18 +6,14 @@ This application is independent of the OpSec Project and can be run without requ
 
 Previously hosted at vivace-io/zk2s, this project has been moved to this organization to group it with other Eve Online tools and applications.
 
-## Version 1.0
+## Version 2.0
 
 **Changes:**
 
-**This release will break old configurations!**
-
-First major release!
-
- - [x] **Multiple Slack Team support**
- - [x] Configuration changes to accommodate the above.
- - [x] Templates `killtitle` and `killbody` renamed to `kill-title` and `kill-body`
- - [x] Lots and lots of code changes and packages created/deleted/consolidated.
+ - [x] Template file path is now specified in configuration. If the file path is not specified, defaults to `response.tmpl` of the working directory.
+ - [x] Improved API such that it can be used in other applications.
+ - [x] More code cleanup... I'm cringing at my own code.
+ - [x] Fixed posting to private groups (hopefully).
 
 ## Note
 

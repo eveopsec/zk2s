@@ -3,54 +3,54 @@
 package filter
 
 import (
-	"github.com/eveopsec/zk2s/zk2s/config"
+	"github.com/eveopsec/zk2s/app/config"
 	"github.com/vivace-io/evelib/crest"
-	"github.com/vivace-io/evelib/zkill"
+	"github.com/vivace-io/evelib/redisq"
 )
 
 // Within returns true if the kill is within the channel's filter, false otherwise
-func Within(kill zkill.Kill, channel config.Channel) bool {
+func Within(payload redisq.Payload, channel config.Channel) bool {
 	// KillID of 0 should be skipped as it means no kill was returned from RedisQ
-	if kill.KillID == 0 {
+	if payload.KillID == 0 {
 		return false
 	}
-	if !valueOK(kill, channel) {
+	if !valueOK(payload, channel) {
 		return false
 	}
-	if !shipOK(kill, channel) {
+	if !shipOK(payload, channel) {
 		return false
 	}
-	if !involvedOK(kill, channel) {
+	if !involvedOK(payload, channel) {
 		return false
 	}
 	return true
 }
 
 // IsLoss returns true if the kill is a loss, false otherwise
-func IsLoss(kill zkill.Kill, channel config.Channel) bool {
-	if characterOK(kill.Killmail.Victim.Character, channel) {
+func IsLoss(payload redisq.Payload, channel config.Channel) bool {
+	if characterOK(payload.Killmail.Victim.Character, channel) {
 		return true
 	}
-	if corporationOK(kill.Killmail.Victim.Corporation, channel) {
+	if corporationOK(payload.Killmail.Victim.Corporation, channel) {
 		return true
 	}
-	if allianceOK(kill.Killmail.Victim.Alliance, channel) {
+	if allianceOK(payload.Killmail.Victim.Alliance, channel) {
 		return true
 	}
 	return false
 }
 
 // IsAwox returns true if the kill was an Awox, partial or otherwise. False if not.
-func IsAwox(kill zkill.Kill, channel config.Channel) bool {
-	if IsLoss(kill, channel) {
-		for a := range kill.Killmail.Attackers {
-			if characterOK(kill.Killmail.Attackers[a].Character, channel) {
+func IsAwox(payload redisq.Payload, channel config.Channel) bool {
+	if IsLoss(payload, channel) {
+		for a := range payload.Killmail.Attackers {
+			if characterOK(payload.Killmail.Attackers[a].Character, channel) {
 				return true
 			}
-			if corporationOK(kill.Killmail.Attackers[a].Corporation, channel) {
+			if corporationOK(payload.Killmail.Attackers[a].Corporation, channel) {
 				return true
 			}
-			if allianceOK(kill.Killmail.Attackers[a].Alliance, channel) {
+			if allianceOK(payload.Killmail.Attackers[a].Alliance, channel) {
 				return true
 			}
 		}
@@ -58,49 +58,52 @@ func IsAwox(kill zkill.Kill, channel config.Channel) bool {
 	return false
 }
 
-func valueOK(kill zkill.Kill, channel config.Channel) bool {
+func valueOK(payload redisq.Payload, channel config.Channel) bool {
 	// If kill value is within [MinimumValue, MaximumValue] return true
-	if kill.Zkb.TotalValue >= float32(channel.MinimumValue) && kill.Zkb.TotalValue <= float32(channel.MaximumValue) {
+	if payload.Zkb.TotalValue >= float32(channel.MinimumValue) && payload.Zkb.TotalValue <= float32(channel.MaximumValue) {
 		return true
 	}
 	// If kill value is greater than min AND no max value is set, return true
-	if kill.Zkb.TotalValue >= float32(channel.MinimumValue) && channel.MaximumValue == 0 {
+	if payload.Zkb.TotalValue >= float32(channel.MinimumValue) && channel.MaximumValue == 0 {
 		return true
 	}
 	return false
 }
 
+<<<<<<< HEAD:app/filter/filter.go
+=======
 // returns true if ship is NOT excluded by name, false otherwise
-func shipOK(kill zkill.Kill, channel config.Channel) bool {
+>>>>>>> d67acc65ff6d47ca5371df33146c36b03ef0f75e:zk2s/filter/filter.go
+func shipOK(payload redisq.Payload, channel config.Channel) bool {
 	for ship := range channel.ExcludedShips {
-		if kill.Killmail.Victim.ShipType.Name == channel.ExcludedShips[ship] {
+		if payload.Killmail.Victim.ShipType.Name == channel.ExcludedShips[ship] {
 			return false
 		}
-		if string(kill.Killmail.Victim.ShipType.ID) == channel.ExcludedShips[ship] {
+		if string(payload.Killmail.Victim.ShipType.ID) == channel.ExcludedShips[ship] {
 			return false
 		}
 	}
 	return true
 }
 
-func involvedOK(kill zkill.Kill, channel config.Channel) bool {
-	if characterOK(kill.Killmail.Victim.Character, channel) {
+func involvedOK(payload redisq.Payload, channel config.Channel) bool {
+	if characterOK(payload.Killmail.Victim.Character, channel) {
 		return true
 	}
-	if corporationOK(kill.Killmail.Victim.Corporation, channel) {
+	if corporationOK(payload.Killmail.Victim.Corporation, channel) {
 		return true
 	}
-	if allianceOK(kill.Killmail.Victim.Alliance, channel) {
+	if allianceOK(payload.Killmail.Victim.Alliance, channel) {
 		return true
 	}
-	for a := range kill.Killmail.Attackers {
-		if characterOK(kill.Killmail.Attackers[a].Character, channel) {
+	for a := range payload.Killmail.Attackers {
+		if characterOK(payload.Killmail.Attackers[a].Character, channel) {
 			return true
 		}
-		if corporationOK(kill.Killmail.Attackers[a].Corporation, channel) {
+		if corporationOK(payload.Killmail.Attackers[a].Corporation, channel) {
 			return true
 		}
-		if allianceOK(kill.Killmail.Attackers[a].Alliance, channel) {
+		if allianceOK(payload.Killmail.Attackers[a].Alliance, channel) {
 			return true
 		}
 	}
