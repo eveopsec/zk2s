@@ -1,22 +1,29 @@
 package config
 
 import (
+	"errors"
+	"sync"
+
 	"github.com/nlopes/slack"
 	"github.com/vivace-io/gonfig"
 )
 
+// ReadConfig accepts a file path and returns the parsed configuration, if
+// found. If the file was not found, or could not be parsed, an error is
+// returned and the configuration model is nil.
 func ReadConfig(filepath string) (cfg *Configuration, err error) {
 	cfg = new(Configuration)
-	cfg.filepath = filepath
-	if err := gonfig.Load(cfg); err != nil {
+	cfg.FilePath = filepath
+	if err := cfg.Load(); err != nil {
 		return nil, err
 	}
 	return
 }
 
-// Configuration holds the configuration for zk2s
+// Configuration holds the configuration for the application.
 type Configuration struct {
-	filepath     string  `json:"-"`
+	locker       *sync.RWMutex
+	FilePath     string  `json:"-"`
 	TemplateFile string  `json:"template_file"`
 	UserAgent    string  `json:"userAgent"`
 	Teams        []*Team `json:"teams"`
@@ -24,15 +31,32 @@ type Configuration struct {
 
 // File returns the file name/path for gonfig interface
 func (cfg *Configuration) File() string {
-	return cfg.filepath
+	return cfg.FilePath
 }
 
-// Save the configuration file
+// Save the configuration file on the file path set in Configuration.FilePath.
 func (cfg *Configuration) Save() error {
+	cfg.locker.Lock()
+	defer cfg.locker.Unlock()
+	if cfg.FilePath == "" {
+		return errors.New("Configuration.FilePath was not set")
+	}
 	return gonfig.Save(cfg)
 }
 
-// Team is the configuration object for a slack team.
+// Load the configuration from the FilePath. This overwrites any unsaved changes.
+// Returns an error for an unset file path or any file system permission level
+// errors.
+func (cfg *Configuration) Load() error {
+	cfg.locker.Lock()
+	defer cfg.locker.Unlock()
+	if cfg.FilePath == "" {
+		return errors.New("Configuration.FilePath was not set")
+	}
+	return gonfig.Load(cfg)
+}
+
+// Team is the configuration object for a Slack team.
 type Team struct {
 	BotToken   string        `json:"botToken"`
 	Channels   []Channel     `json:"channels"`
