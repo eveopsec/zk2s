@@ -19,6 +19,6 @@ func main() {
 		cmd.CMD_Start,
 	}
 	if err := app.Run(os.Args); err != nil {
-		log.Println("[FATAL] Application exited with error.")
+		log.Println("[FATAL] Application exited with error: %v.", err)
 	}
 }

@@ -6,14 +6,17 @@ This application is independent of the OpSec Project and can be run without requ
 
 Previously hosted at vivace-io/zk2s, this project has been moved to this organization to group it with other Eve Online tools and applications.
 
-## Version 2.0
+## Version 2.1
 
 **Changes:**
 
- - [x] Template file path is now specified in configuration. If the file path is not specified, defaults to `response.tmpl` of the working directory.
- - [x] Improved API such that it can be used in other applications.
- - [x] More code cleanup... I'm cringing at my own code.
- - [x] Fixed posting to private groups (hopefully).
+*NOTE:* There are two breaking changes in this release for old configurations and templates. Old versions will not work on this release.
+
+ - [x] Changed the configuration JSON tag `template_file` to `templateFile`.
+ - [x] Renamed the data model passed to templates from `data` to `TemplateData`.
+ - [x] Reduced the fields in template data for the sake of simplicity. However, these fields are still accessible (in one way or another) from `TemplateData.Killmail`.
+ - [x] Updated default template to reflect changes to aforementioned `TemplateData` model.
+ - [x] Default template now links to attackers on ZKillboard.
 
 ## Note
 
@@ -37,26 +40,21 @@ To install, you can either install from source, or download the binary from rele
  1. [Download the binary from Github](https://github.com/eveopsec/zk2s/releases ) for your OS distribution and extract it in to a folder.
  2. Setup your configuration file as you see fit. [See the wiki for details.](https://github.com/eveopsec/zk2s/wiki)
 
-**From Docker:**
- 1. Pull the image from DockerHub: `docker pull eveopsec/zk2s`
- 2. Create your desired configuration and templates, and store them in a directory of your choosing. (If you do not have a template, feel free to use the provided default template!)
- 3. Create your container from the image, like so: `docker create --name eve-zk2s -v /host/path/to/config/dir/zk2s:/zk2s zk2s:1.1`
- 4. Star the docker image and you're good to go!
+**From Source:**
 
- **From Source:**
+ *BEFORE YOU BEGIN*: This project uses `vivace-io/evelib` as one of its core dependencies, which is under active development as my time allows. As such, the API may change and suddenly this application does not compile. If it comes to this, please feel free
+ to create a new issue and I can work on a quick fix, or present your own fix in a pull request.
 
- *THIS IS NOT RECOMMENDED*
- Mostly because the `evelib` project API that ZK2S uses is in a constant of flux, half because I'm always changing my mind as to how to program it, the other half because my time is currently limited!
+ Regardless, below are the instructions to compile from source.
 
- If you know your way around the code, then by all means. You will get several errors when Go tries to compile it, generally for methods not being found or wrong return types (literals vs pointers etc.).
-
- I'll try to get back to consistency as soon as possible!
-
- You will need to:
-  1. Install or have installed the latest version of Go installed, with the environment properly configured. (see [this document](https://golang.org/doc/install) for more information on that process).
+  1. Install or have installed the latest version of Go installed, with the environment properly configured. See [this document](https://golang.org/doc/install) for more information on that process.
   2. Run `go get -u github.com/vivace-io/zk2s` to retrieve the source and its dependencies.
   3. Run `zk2s configure assistant` to run the configuration setup
   4. Run `zk2s start` to run the application.
+
+** From Docker:**
+
+While there is a Dockerfile in this repository, I've found issues where the container is not running properly, or unexpectedly hangs/crashes. I have not had the time to work on a solution, so currently Docker is not actively supported. Should you be able to replicate this problem, and/or present a fix, please open a new issue/pull request and we can get it in to the code base ASAP!
 
 ## Configuring and Customizing
 

@@ -24,7 +24,7 @@ var (
 )
 
 func start(c *cli.Context) (err error) {
-	log.Printf("%v version %v", c.App.Name, c.App.Version)
+	log.Printf("[NOTIFY] Starting %v v%v", c.App.Name, c.App.Version)
 	var cfg *config.Configuration
 	var application *app.App
 

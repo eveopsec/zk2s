@@ -64,7 +64,7 @@ func valueOK(payload redisq.Payload, channel config.Channel) bool {
 		return true
 	}
 	// If kill value is greater than min AND no max value is set, return true
-	if payload.Zkb.TotalValue >= float32(channel.MinimumValue) && channel.MaximumValue == 0 {
+	if payload.Zkb.TotalValue >= float32(channel.MinimumValue) && channel.MaximumValue <= 0 {
 		return true
 	}
 	return false

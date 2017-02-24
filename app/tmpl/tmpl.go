@@ -12,7 +12,7 @@ var T *template.Template
 func Init(tmplFilePath string) error {
 	var err error
 	if tmplFilePath == "" {
-		log.Println("[WARN] Template file path not specified in configuration; using default 'template.tmpl'...")
+		log.Println("[WARNING] Template file path not specified in configuration; using default 'template.tmpl'...")
 		tmplFilePath = "response.tmpl"
 	}
 	T, err = template.ParseGlob(tmplFilePath)

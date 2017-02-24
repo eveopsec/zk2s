@@ -14,23 +14,16 @@ import (
 	"github.com/vivace-io/evelib/redisq"
 )
 
-// data is passed to templates for defining how a slacklib post appears.
-type data struct {
-	Killmail       crest.Killmail
-	TotalValue     string
-	IsLoss         bool
-	IsSolo         bool
-	InAlli         bool
-	LosingCorp     string
-	LosingAlli     string
-	CorpsInvolved  []string
-	AlliInvolved   []string
-	PilotInvolved  []string
-	FinalBlowPilot []string
-	FinalBlowCorp  []string
-	FinalBlowAlli  []string
-	TotalCorp      []string
-	TotalAlli      []string
+// TemplateData is passed to templates for defining how a slacklib post appears.
+type TemplateData struct {
+	// The raw CREST killmail model.
+	Killmail crest.Killmail
+	// The total value of the kill, as a formatted string with appropriate abbreviations.
+	TotalValue string
+	// IsLoss is true when the kill is a loss to the filter, false otherwise.
+	IsLoss bool
+	// IsSolo is true when the killmail was a solo kill/loss.
+	IsSolo bool
 }
 
 // format loads the formatting template and applies formatting
@@ -41,101 +34,15 @@ func format(payload redisq.Payload, channel config.Channel) (messageParams slack
 	var err error
 
 	// define post data for templates
-	d := new(data)
+	d := new(TemplateData)
 	d.Killmail = payload.Killmail
 	d.TotalValue = humanize.Comma(int64(payload.Zkb.TotalValue))
 	d.IsLoss = filter.IsLoss(payload, channel)
-	//Solo kill testing
+	// Check if the kill was solo (NOTE: NPCs count)
 	if len(payload.Killmail.Attackers) == 1 {
 		d.IsSolo = true
 	} else {
 		d.IsLoss = false
-	}
-
-	//Testing to see if the victim is in an alliance
-	if payload.Killmail.Victim.Alliance.Name != "" {
-		d.InAlli = true
-		d.LosingAlli = payload.Killmail.Victim.Alliance.Name
-	}
-	d.LosingCorp = payload.Killmail.Victim.Corporation.Name
-
-	// Compile list of pilots involved, if not final blow
-	for a := range payload.Killmail.Attackers {
-		okToAdd := true
-		if payload.Killmail.Attackers[a].FinalBlow == true {
-			okToAdd = false
-		}
-		if payload.Killmail.Attackers[a].Character.Name == "" {
-			okToAdd = false
-		}
-		if okToAdd {
-			d.PilotInvolved = append(d.PilotInvolved, payload.Killmail.Attackers[a].Character.Name)
-		}
-	}
-
-	//Compile the list for the final blow pilot, mainly use for formatting commas on the post
-	for a := range payload.Killmail.Attackers {
-		if payload.Killmail.Attackers[a].FinalBlow == true {
-			okToAdd := true
-			if payload.Killmail.Attackers[a].Character.Name == "" {
-				okToAdd = false
-			}
-			if okToAdd {
-				d.FinalBlowPilot = append(d.FinalBlowPilot, payload.Killmail.Attackers[a].Character.Name)
-				d.FinalBlowCorp = append(d.FinalBlowCorp, payload.Killmail.Attackers[a].Corporation.Name)
-				d.FinalBlowAlli = append(d.FinalBlowAlli, payload.Killmail.Attackers[a].Alliance.Name)
-				d.TotalCorp = append(d.TotalCorp, payload.Killmail.Attackers[a].Corporation.Name)
-				d.TotalAlli = append(d.TotalAlli, payload.Killmail.Attackers[a].Alliance.Name)
-			}
-
-		}
-	}
-	// Compile list of corporations involved from attackers, ignoring duplicates
-	for a := range payload.Killmail.Attackers {
-		okToAdd := true
-		for c := range d.CorpsInvolved {
-			if payload.Killmail.Attackers[a].Corporation.Name == d.CorpsInvolved[c] {
-				okToAdd = false
-				break
-			}
-			if payload.Killmail.Attackers[a].Corporation.Name == d.FinalBlowCorp[c] {
-				okToAdd = false
-				break
-			}
-			if okToAdd {
-				d.CorpsInvolved = append(d.CorpsInvolved, payload.Killmail.Attackers[a].Corporation.Name)
-				d.TotalCorp = append(d.TotalCorp, payload.Killmail.Attackers[a].Corporation.Name)
-			}
-		}
-	}
-	// Compile list of alliances involved from attackers, ignoring duplicates
-	for a := range payload.Killmail.Attackers {
-
-		okToAdd := true
-
-		for c := range d.AlliInvolved {
-
-			// Do not add blank alliances (corp is not in an alliance)
-			if payload.Killmail.Attackers[a].Alliance.Name == "" {
-				okToAdd = false
-				break
-			}
-			if payload.Killmail.Attackers[a].Alliance.Name == d.AlliInvolved[c] {
-				okToAdd = false
-				d.InAlli = true
-				break
-			}
-			if payload.Killmail.Attackers[a].Alliance.Name == d.FinalBlowAlli[c] {
-				okToAdd = false
-				d.InAlli = true
-				break
-			}
-			if okToAdd {
-				d.AlliInvolved = append(d.AlliInvolved, payload.Killmail.Attackers[a].Alliance.Name)
-				d.TotalAlli = append(d.TotalAlli, payload.Killmail.Attackers[a].Alliance.Name)
-				d.InAlli = true
-			}
-		}
 	}
 
 	// Execute templates

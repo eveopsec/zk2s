@@ -15,17 +15,10 @@
 {{end}}
 
 {{define "kill-body"}}
-*Total Value:* {{.TotalValue}} ISK
+*Total Value*: {{.TotalValue}} ISK
 {{if .IsSolo}}
-*Pilots Involved ({{len .Killmail.Attackers}}):* {{range $attacker := index .FinalBlowPilot}}{{$attacker}}{{end}}^
-*Corporations Involved ({{len .TotalCorp}}):* {{range $corp := index .FinalBlowCorp}}{{$corp}}{{end}}^, {{.LosingCorp}}
-{{if .InAlli}}*Alliances Involved ({{len .TotalAlli}}):* {{range $alli := index .FinalBlowAlli}}{{$alli}}{{end}}^, {{.LosingAlli}}
-{{end}}
+*Attacker:* {{range $attacker := .Killmail.Attackers}}{{if $attacker.Character.Name}}{{$attacker.Character.Name}}{{else}}{{$attacker.ShipType.Name}}({{$attacker.Corporation.Name}}){{end}}{{end}}
 {{else}}
-*Pilots Involved ({{len .Killmail.Attackers}}):* {{range $attacker := index .FinalBlowPilot}}{{$attacker}}{{end}}^{{range $attacker := index .PilotInvolved}}, {{$attacker}}{{end}}
-*Corporations Involved ({{len .TotalCorp}}):* {{range $corp := index .FinalBlowCorp}}{{$corp}}{{end}}^, {{.LosingCorp}}(*V*){{range $corp := index .CorpsInvolved}}, {{$corp}}{{end}}
-{{if .InAlli}}*Alliances Involved ({{len .TotalAlli}}):* {{range $alli := index .FinalBlowAlli}}{{$alli}}{{end}}^, {{.LosingAlli}}(*V*){{range $alli := index .AlliInvolved}}, {{$alli}}{{end}}
+*Attackers({{len .Killmail.Attackers}}):* {{range $index, $attacker := .Killmail.Attackers}}{{if $attacker.Character.Name}}<https://zkillboard.com/character/{{$attacker.Character.ID}}|{{$attacker.Character.Name}}>{{else}}{{$attacker.ShipType.Name}}{{if $attacker.Corporation.Name}} (<https://zkillboard.com/corporation/{{$attacker.Corporation.ID}}|{{$attacker.Corporation.Name}}>){{end}}{{end}}, {{end}}
 {{end}}
-{{end}}
-^ Final Blow
 {{end}}

@@ -14,6 +14,7 @@ import (
 func ReadConfig(filepath string) (cfg *Configuration, err error) {
 	cfg = new(Configuration)
 	cfg.FilePath = filepath
+	cfg.locker = new(sync.RWMutex)
 	if err := cfg.Load(); err != nil {
 		return nil, err
 	}
@@ -24,7 +25,7 @@ func ReadConfig(filepath string) (cfg *Configuration, err error) {
 type Configuration struct {
 	locker       *sync.RWMutex
 	FilePath     string  `json:"-"`
-	TemplateFile string  `json:"template_file"`
+	TemplateFile string  `json:"templateFile"`
 	UserAgent    string  `json:"userAgent"`
 	Teams        []*Team `json:"teams"`
 }
@@ -60,8 +61,8 @@ func (cfg *Configuration) Load() error {
 type Team struct {
 	BotToken   string        `json:"botToken"`
 	Channels   []Channel     `json:"channels"`
-	Bot        *slack.Client `json:"-"`
-	FailedAuth bool          `json:"-"`
+	Bot        *slack.Client `json:"-"` // Used only during run time.
+	FailedAuth bool          `json:"-"` // Used only during run time. Denotes a failed token.
 }
 
 // Channel defines the configuration for a slack channel in a team, including its filters
