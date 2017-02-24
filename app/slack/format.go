@@ -38,12 +38,6 @@ func format(payload redisq.Payload, channel config.Channel) (messageParams slack
 	d.Killmail = payload.Killmail
 	d.TotalValue = humanize.Comma(int64(payload.Zkb.TotalValue))
 	d.IsLoss = filter.IsLoss(payload, channel)
-	// Check if the kill was solo (NOTE: NPCs count)
-	if len(payload.Killmail.Attackers) == 1 {
-		d.IsSolo = true
-	} else {
-		d.IsLoss = false
-	}
 
 	// Execute templates
 	err = tmpl.T.ExecuteTemplate(title, "kill-title", d)
