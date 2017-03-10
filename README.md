@@ -12,7 +12,7 @@ Previously hosted at vivace-io/zk2s, this project has been moved to this organiz
 
 Un-checked changes have not been completed, or are not fully tested.
 
- - [x] Updated default template to include links to attacker corporations.
+ - [x] Updated default template to include damage taken, and ZKillboard links for victim/corporation and attacker corporations.
  - [ ] Added `includeSystems` to monitor specific systems by ID.
 
 ## Note

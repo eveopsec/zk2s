@@ -15,7 +15,9 @@
 {{end}}
 
 {{define "kill-body"}}
-*Total Value*: {{.TotalValue}} ISK
+*Victim*: <https://zkillboard.com/character/{{.Killmail.Victim.Character.ID}}|{{.Killmail.Victim.Character.Name}}> (<https://zkillboard.com/corporation/{{.Killmail.Victim.Corporation.ID}}|{{.Killmail.Victim.Corporation.Name}}>)
+*Damage Taken:* {{.Killmail.Victim.DamageTaken}}
+*Total Value:* {{.TotalValue}} ISK
 {{if .IsSolo}}
 *Attacker:* {{range $attacker := .Killmail.Attackers}}{{if $attacker.Character.Name}}<https://zkillboard.com/character/{{$attacker.Character.ID}}|{{$attacker.Character.Name}}> (<https://zkillboard.com/corporation/{{$attacker.Corporation.ID}}|{{$attacker.Corporation.Name}}>){{else}}{{$attacker.ShipType.Name}}({{$attacker.Corporation.Name}}){{end}}{{end}}
 {{else}}
