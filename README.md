@@ -6,17 +6,14 @@ This application is independent of the OpSec Project and can be run without requ
 
 Previously hosted at vivace-io/zk2s, this project has been moved to this organization to group it with other Eve Online tools and applications.
 
-## Version 2.1
+## Version 2.2
 
 **Changes:**
 
-*NOTE:* There are two breaking changes in this release for old configurations and templates. Old versions will not work on this release.
+Un-checked changes have not been completed, or are not fully tested.
 
- - [x] Changed the configuration JSON tag `template_file` to `templateFile`.
- - [x] Renamed the data model passed to templates from `data` to `TemplateData`.
- - [x] Reduced the fields in template data for the sake of simplicity. However, these fields are still accessible (in one way or another) from `TemplateData.Killmail`.
- - [x] Updated default template to reflect changes to aforementioned `TemplateData` model.
- - [x] Default template now links to attackers on ZKillboard.
+ - [x] Updated default template to include links to attacker corporations.
+ - [ ] Added `includeSystems` to monitor specific systems by ID.
 
 ## Note
 
