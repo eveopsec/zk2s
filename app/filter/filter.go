@@ -14,6 +14,9 @@ func Within(payload redisq.Payload, channel config.Channel) bool {
 	if payload.KillID == 0 {
 		return false
 	}
+	if IsLoss(payload, channel) && channel.ExcludeLosses {
+		return false
+	}
 	if !valueOK(payload, channel) {
 		return false
 	}

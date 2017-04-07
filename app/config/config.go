@@ -70,6 +70,7 @@ type Channel struct {
 	Name                string   `json:"channelName"`
 	MinimumValue        int      `json:"minimumValue"`
 	MaximumValue        int      `json:"maximumValue"`
+	ExcludeLosses       bool     `json:"excludeLosses"`
 	IncludeCharacters   []string `json:"includeCharacters"`
 	IncludeCorporations []string `json:"includeCorporations"`
 	IncludeAlliances    []string `json:"includeAlliances"`
