@@ -8,7 +8,7 @@ import "github.com/urfave/cli"
 
 var (
 	// VERSION of zk2s
-	VERSION = "2.3"
+	VERSION = "2.2"
 
 	// USAGE text for zk2s application/library
 	USAGE = "A Slack bot for posting new killmails from zKillboard to Slack in near-real time."
