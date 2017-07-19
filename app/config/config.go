@@ -42,7 +42,7 @@ func (cfg *Configuration) Save() error {
 	if cfg.FilePath == "" {
 		return errors.New("Configuration.FilePath was not set")
 	}
-	return gonfig.Save(cfg)
+	return gonfig.Write(cfg, true)
 }
 
 // Load the configuration from the FilePath. This overwrites any unsaved changes.
@@ -54,7 +54,7 @@ func (cfg *Configuration) Load() error {
 	if cfg.FilePath == "" {
 		return errors.New("Configuration.FilePath was not set")
 	}
-	return gonfig.Load(cfg)
+	return gonfig.Read(cfg)
 }
 
 // Team is the configuration object for a Slack team.
